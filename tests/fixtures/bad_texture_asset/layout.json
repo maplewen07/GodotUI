@@ -1,0 +1,15 @@
+{
+  "root": {
+    "id": "BadTextureAssetWidget",
+    "type": "Control",
+    "name": "BadTextureAssetWidget",
+    "children": [
+      {
+        "id": "IconTexture",
+        "type": "TextureRect",
+        "name": "IconTexture",
+        "properties": {}
+      }
+    ]
+  }
+}

@@ -1,0 +1,354 @@
+// Copyright 2026-Present SteveSantoso. All Rights Reserved.
+// Liquid Glass UI effect shaders.
+// FPixelShaderUtils uses the engine fullscreen VS, so these pixel shaders
+// reconstruct [0,1] UVs from SV_Position via SvPositionToUV.
+
+#include "/Engine/Public/Platform.ush"
+
+// ---- Shared / per-pass loose parameters ----
+Texture2D    InputTexture;
+SamplerState InputSampler;
+float2       InvInputSize;
+float2       BlurDirection;
+float4       SvPositionToUV;
+
+// =====================================================================================
+// Downsample (4-tap box).
+// =====================================================================================
+void DownsamplePS(float4 SvPosition : SV_POSITION, out float4 OutColor : SV_Target0)
+{
+	float2 UV = SvPosition.xy * SvPositionToUV.xy + SvPositionToUV.zw;
+	float2 O = InvInputSize * 0.5f;
+	float4 C  = InputTexture.SampleLevel(InputSampler, UV + float2(-O.x, -O.y), 0);
+	C        += InputTexture.SampleLevel(InputSampler, UV + float2( O.x, -O.y), 0);
+	C        += InputTexture.SampleLevel(InputSampler, UV + float2(-O.x,  O.y), 0);
+	C        += InputTexture.SampleLevel(InputSampler, UV + float2( O.x,  O.y), 0);
+	OutColor = C * 0.25f;
+}
+
+// =====================================================================================
+// Separable Gaussian blur (9 taps). Run once per axis via BlurDirection.
+// =====================================================================================
+void BlurPS(float4 SvPosition : SV_POSITION, out float4 OutColor : SV_Target0)
+{
+	float2 UV = SvPosition.xy * SvPositionToUV.xy + SvPositionToUV.zw;
+	float4 C = InputTexture.SampleLevel(InputSampler, UV, 0) * 0.2270270270f;
+	C += (InputTexture.SampleLevel(InputSampler, UV + BlurDirection * 1.0f, 0)
+		+ InputTexture.SampleLevel(InputSampler, UV - BlurDirection * 1.0f, 0)) * 0.1945945946f;
+	C += (InputTexture.SampleLevel(InputSampler, UV + BlurDirection * 2.0f, 0)
+		+ InputTexture.SampleLevel(InputSampler, UV - BlurDirection * 2.0f, 0)) * 0.1216216216f;
+	C += (InputTexture.SampleLevel(InputSampler, UV + BlurDirection * 3.0f, 0)
+		+ InputTexture.SampleLevel(InputSampler, UV - BlurDirection * 3.0f, 0)) * 0.0540540541f;
+	C += (InputTexture.SampleLevel(InputSampler, UV + BlurDirection * 4.0f, 0)
+		+ InputTexture.SampleLevel(InputSampler, UV - BlurDirection * 4.0f, 0)) * 0.0162162162f;
+	OutColor = C;
+}
+
+// =====================================================================================
+// Composite: shape mask, lensing, prism split, frost mix, tint, rim, inner glow/shadow.
+// =====================================================================================
+Texture2D    CapturedTexture;
+SamplerState CapturedSampler;
+Texture2D    BlurredTexture;
+SamplerState BlurredSampler;
+Texture2D    AlphaMaskTexture;
+SamplerState AlphaMaskSampler;
+
+float2 RectSize;
+float  SquirclePower;
+float  ShapeMode;            // 0 = superellipse rect, 1 = capsule, 2 = circle, 3+ = procedural mask shapes
+float  RefractionStrength;
+float  RefractionPower;
+float  RefractionThickness;  // edge band width in pixels
+float  IndexOfRefraction;    // simplified lens amplification, 1 = none
+float  ChromaticAberration;
+float  PrismIntensity;
+float  NoiseAmount;
+float  FrostRadius;          // 0 = clear captured background, 1 = frosted blurred background
+float  BlurStrength;         // Blur kernel radius; also biases final frost mixing for intuitive UI controls
+float  GlowAmount;
+float  RimIntensity;
+float  InnerGlowIntensity;
+float  InnerShadowIntensity;
+float2 GlowDir;
+float4 TintColor;
+float  TintOpacity;
+float  Saturation;
+float  AdaptiveTintStrength;
+float  GlassOpacity;
+float  EdgeSoftness;
+float2 MotionVector;         // movement in output pixels, smoothed on the Slate side
+float  MotionDeformationStrength;
+float  UseAlphaMask;         // 1 = use AlphaMaskTexture instead of the analytic shape alpha
+float  AlphaMaskThreshold;   // mask value where glass starts becoming visible
+float  AlphaMaskSoftness;    // threshold feather in alpha space
+float  AlphaMaskInvert;
+
+float SdSuperellipse(float2 P, float N, float R)
+{
+	// Approximate signed distance for |x|^N + |y|^N = R^N.
+	// Higher N makes the rounded rectangle boxier while keeping continuous curvature.
+	float2 A = abs(P);
+	float Num = pow(A.x, N) + pow(A.y, N) - pow(R, N);
+	float Den = N * sqrt(pow(A.x, 2.0f * N - 2.0f) + pow(A.y, 2.0f * N - 2.0f)) + 1e-5f;
+	return Num / Den;
+}
+
+float2 ApplyMotionDeformation(float2 Ppx, float2 Size)
+{
+	float2 Motion = MotionVector * MotionDeformationStrength;
+	float MotionLen = length(Motion);
+	if (MotionLen <= 0.001f)
+	{
+		return Ppx;
+	}
+
+	float2 Dir = Motion / MotionLen;
+	float Stretch = saturate(MotionLen / max(min(Size.x, Size.y) * 0.35f, 1.0f));
+	float Along = dot(Ppx, Dir);
+	float2 Perp = Ppx - Dir * Along;
+
+	// Compress the SDF coordinate along the movement axis so the rendered shape appears stretched.
+	float AlongScale = 1.0f + Stretch * 0.42f;
+	float2 Deformed = Dir * (Along / AlongScale) + Perp;
+
+	// Add a small trailing bias so fast motion feels fluid instead of mathematically symmetric.
+	float CenterFalloff = 1.0f - saturate(length(Ppx) / max(min(Size.x, Size.y), 1.0f));
+	return Deformed - Dir * MotionLen * Stretch * 0.08f * CenterFalloff;
+}
+
+float SdRegularPolygon(float2 Ppx, float Radius, float Sides, float Rotation)
+{
+	float A = atan2(Ppx.y, Ppx.x) + Rotation;
+	float Sector = 6.28318530718f / Sides;
+	float D = cos(floor(0.5f + A / Sector) * Sector - A) * length(Ppx);
+	return D - Radius;
+}
+
+float SdStar(float2 Ppx, float Radius)
+{
+	float A = atan2(Ppx.y, Ppx.x);
+	float R = Radius * (0.78f + 0.22f * cos(A * 5.0f));
+	return length(Ppx) - R;
+}
+
+float SdBlob(float2 Ppx, float Radius)
+{
+	float A = atan2(Ppx.y, Ppx.x);
+	float R = Radius * (0.86f + 0.075f * sin(A * 3.0f + 0.7f) + 0.055f * sin(A * 7.0f - 0.35f));
+	return length(Ppx) - R;
+}
+
+float SdShapePx(float2 UV)
+{
+	// Return signed distance in pixels. Negative is inside the glass, positive is outside.
+	float2 Size = max(RectSize, float2(1.0f, 1.0f));
+	float2 Ppx = (UV - 0.5f) * Size;
+	Ppx = ApplyMotionDeformation(Ppx, Size);
+	float Radius = min(Size.x, Size.y) * 0.5f;
+
+	if (ShapeMode > 5.5f)
+	{
+		return SdBlob(Ppx, Radius);
+	}
+
+	if (ShapeMode > 4.5f)
+	{
+		return SdStar(Ppx, Radius);
+	}
+
+	if (ShapeMode > 3.5f)
+	{
+		return SdRegularPolygon(Ppx, Radius * 0.92f, 6.0f, 0.52359877559f);
+	}
+
+	if (ShapeMode > 2.5f)
+	{
+		return (abs(Ppx.x) + abs(Ppx.y) - Radius) * 0.70710678f;
+	}
+
+	if (ShapeMode > 1.5f)
+	{
+		// Circle uses the smaller widget dimension so non-square allocations still stay circular.
+		return length(Ppx) - Radius;
+	}
+
+	if (ShapeMode > 0.5f)
+	{
+		// Capsule is a line segment swept by a circle; switch axis for vertical capsules.
+		if (Size.x >= Size.y)
+		{
+			float HalfSegment = max(Size.x - Size.y, 0.0f) * 0.5f;
+			float2 Centre = float2(clamp(Ppx.x, -HalfSegment, HalfSegment), 0.0f);
+			return length(Ppx - Centre) - Radius;
+		}
+
+		float HalfSegment = max(Size.y - Size.x, 0.0f) * 0.5f;
+		float2 Centre = float2(0.0f, clamp(Ppx.y, -HalfSegment, HalfSegment));
+		return length(Ppx - Centre) - Radius;
+	}
+
+	float2 Q = (UV - 0.5f) * 2.0f;
+	return SdSuperellipse(Q, max(SquirclePower, 2.0f), 1.0f) * Radius;
+}
+
+float2 ShapeNormal(float2 UV)
+{
+	// Finite-difference the SDF to get an outward normal. The normal drives both refraction
+	// displacement and directional rim lighting.
+	float2 StepUV = 1.0f / max(RectSize, float2(1.0f, 1.0f));
+	float Dx = SdShapePx(saturate(UV + float2(StepUV.x, 0.0f))) - SdShapePx(saturate(UV - float2(StepUV.x, 0.0f)));
+	float Dy = SdShapePx(saturate(UV + float2(0.0f, StepUV.y))) - SdShapePx(saturate(UV - float2(0.0f, StepUV.y)));
+	return normalize(float2(Dx, Dy) + float2(1e-5f, 1e-5f));
+}
+
+float CBLGRand(float2 Co)
+{
+	// Tiny deterministic grain is enough to break up smooth blur/tint banding.
+	return frac(sin(dot(Co, float2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+float3 SampleCapturedPrism(float2 UV, float2 CA)
+{
+	// Sample R/G/B at slightly different offsets to imitate prism separation on clear glass.
+	float3 C;
+	C.r = CapturedTexture.SampleLevel(CapturedSampler, saturate(UV + CA), 0).r;
+	C.g = CapturedTexture.SampleLevel(CapturedSampler, saturate(UV),      0).g;
+	C.b = CapturedTexture.SampleLevel(CapturedSampler, saturate(UV - CA), 0).b;
+	return C;
+}
+
+float3 SampleBlurredPrism(float2 UV, float2 CA)
+{
+	// Apply the same prism offset to the blurred source so frosted glass still keeps a coloured rim.
+	float3 C;
+	C.r = BlurredTexture.SampleLevel(BlurredSampler, saturate(UV + CA), 0).r;
+	C.g = BlurredTexture.SampleLevel(BlurredSampler, saturate(UV),      0).g;
+	C.b = BlurredTexture.SampleLevel(BlurredSampler, saturate(UV - CA), 0).b;
+	return C;
+}
+
+float SampleAlphaMask(float2 UV)
+{
+	float4 Mask = AlphaMaskTexture.SampleLevel(AlphaMaskSampler, saturate(UV), 0);
+	// Prefer real alpha for cutout textures. When a texture has fully opaque alpha, treat RGB
+	// brightness as a grayscale mask so authoring plain mask images still works.
+	float Luma = dot(Mask.rgb, float3(0.2126f, 0.7152f, 0.0722f));
+	float A = lerp(Mask.a, Luma, step(0.999f, Mask.a));
+	return lerp(A, 1.0f - A, saturate(AlphaMaskInvert));
+}
+
+static const float CBLG_E = 2.71828182845904523536f;
+#define CBLG_FA 0.7f
+#define CBLG_FB 2.3f
+#define CBLG_FC 5.2f
+#define CBLG_FD 6.9f
+
+void CompositePS(float4 SvPosition : SV_POSITION, out float4 OutColor : SV_Target0)
+{
+	// Local UV is reconstructed from output SV_Position because the pass renders directly into
+	// the widget's rectangle inside the Slate output texture.
+	float2 UV = SvPosition.xy * SvPositionToUV.xy + SvPositionToUV.zw;
+	float2 Q = (UV - 0.5f) * 2.0f;
+
+	// Shape alpha is generated analytically unless an external alpha mask texture is supplied.
+	float Dpx = SdShapePx(UV);
+	float Wdt = max(fwidth(Dpx), 1e-5f) * max(EdgeSoftness, 0.1f);
+	float2 Size = max(RectSize, float2(1.0f, 1.0f));
+	float DistPx = max(-Dpx, 0.0f);
+	float Thickness = max(RefractionThickness, 1.0f);
+	// Edge01 is 1.0 at the rim and fades toward the center over RefractionThickness pixels.
+	float Edge01 = saturate(1.0f - DistPx / Thickness);
+	float2 Normal = ShapeNormal(UV);
+	float RimDistancePx = DistPx;
+
+	float ShapeAlpha = 1.0f - smoothstep(-Wdt, Wdt, Dpx);
+	float MaskAlpha = ShapeAlpha;
+	if (UseAlphaMask > 0.5f)
+	{
+		float RawMask = SampleAlphaMask(UV);
+		float Soft = max(AlphaMaskSoftness, 0.001f);
+		MaskAlpha = smoothstep(AlphaMaskThreshold - Soft, AlphaMaskThreshold + Soft, RawMask);
+
+		float2 StepUV = 1.0f / Size;
+		float Mx = SampleAlphaMask(UV + float2(StepUV.x, 0.0f)) - SampleAlphaMask(UV - float2(StepUV.x, 0.0f));
+		float My = SampleAlphaMask(UV + float2(0.0f, StepUV.y)) - SampleAlphaMask(UV - float2(0.0f, StepUV.y));
+		float2 MaskGrad = float2(Mx, My);
+		float GradLen = length(MaskGrad);
+		if (GradLen > 0.0001f)
+		{
+			// Mask values are high inside and low outside, so the outward normal is -gradient.
+			Normal = -MaskGrad / GradLen;
+		}
+
+		// Alpha-mask textures do not have an analytic SDF, so treat the mask value itself as a
+		// normalized distance ramp when the author provides one. Binary masks still work because
+		// the threshold band below supplies a tight rim.
+		float Interior01 = saturate((RawMask - AlphaMaskThreshold) / max(1.0f - AlphaMaskThreshold, 0.001f));
+		float DistanceRamp = 1.0f - smoothstep(0.0f, 1.0f, Interior01);
+		float EdgeBand = 1.0f - smoothstep(Soft, Soft * 5.0f, abs(RawMask - AlphaMaskThreshold));
+		Edge01 = saturate(max(EdgeBand * 0.82f, DistanceRamp * 0.56f));
+		RimDistancePx = (1.0f - Edge01) * Thickness;
+		DistPx = RimDistancePx;
+	}
+
+	float Alpha = MaskAlpha * GlassOpacity;
+	if (Alpha <= 0.0f)
+	{
+		OutColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		return;
+	}
+
+	float DistForFalloff = DistPx / Thickness;
+	// This is a stylized IOR model: 1.0 disables lens amplification, higher values increase bend.
+	float IorAmount = saturate(IndexOfRefraction - 1.0f);
+	float BendAmount = saturate(RefractionStrength) * IorAmount;
+
+	// Exponential falloff concentrates lensing near the rim, similar to thick rounded glass.
+	float Fx = 1.0f - CBLG_FB * pow(CBLG_FC * CBLG_E, -CBLG_FD * DistForFalloff - CBLG_FA);
+	float ScaleFull = pow(max(Fx, 0.0f), max(RefractionPower, 0.0f));
+	float Scale = lerp(1.0f, ScaleFull, BendAmount);
+
+	float2 NormalUV = Normal / Size;
+	float NormalBendPixels = Edge01 * Edge01 * Thickness * 0.35f * BendAmount;
+	float2 SampleUV = Q * Scale * 0.5f + 0.5f;
+	SampleUV = saturate(SampleUV - NormalUV * NormalBendPixels);
+	SampleUV = saturate(SampleUV - (MotionVector / Size) * MotionDeformationStrength * Edge01 * 0.035f);
+
+	float2 Disp = SampleUV - UV;
+	float2 PrismUV = (Disp - NormalUV * Edge01 * Thickness * 0.2f) * ChromaticAberration * PrismIntensity;
+
+	// Clear and blurred sources are mixed after lensing so the same distorted UV drives both.
+	float3 Sharp = SampleCapturedPrism(SampleUV, PrismUV);
+	float3 Frosted = SampleBlurredPrism(SampleUV, PrismUV);
+	float BlurMix = saturate(BlurStrength * 0.5f);
+	float FrostBlend = saturate(FrostRadius + BlurMix * 0.22f);
+	float FrostMask = saturate(FrostBlend * (0.85f + Edge01 * 0.15f));
+	float3 Bg = lerp(Sharp, Frosted, FrostMask);
+
+	float Noise = (CBLGRand(SvPosition.xy * 1e-3f) - 0.5f) * NoiseAmount;
+	Bg += Noise;
+
+	// Boost or mute colour vibrancy before tint so glass can keep background colourfulness.
+	float Luma = dot(Bg, float3(0.2126f, 0.7152f, 0.0722f));
+	Bg = max(lerp(float3(Luma, Luma, Luma), Bg, Saturation), 0.0f);
+
+	float3 Col = lerp(Bg, TintColor.rgb, TintOpacity);
+
+	float AdaptLuma = dot(Bg, float3(0.2126f, 0.7152f, 0.0722f));
+	float3 AdaptCol = lerp(float3(0.82f, 0.86f, 0.9f), float3(0.08f, 0.09f, 0.11f), saturate(AdaptLuma));
+	Col = lerp(Col, AdaptCol, AdaptiveTintStrength);
+
+	// RimMask is a soft band along the inside edge; Lit biases the band toward GlowDir.
+	float2 SafeGlowDir = normalize(GlowDir + float2(1e-5f, 1e-5f));
+	float RimMask = 1.0f - smoothstep(0.0f, max(Thickness * 0.42f, 1.0f), RimDistancePx);
+	float Lit = saturate(dot(-Normal, SafeGlowDir) * 0.5f + 0.5f);
+	float Directional = (Lit - 0.5f) * 2.0f;
+
+	Col *= 1.0f + Directional * GlowAmount * RimMask * 0.22f;
+	Col *= 1.0f - RimMask * InnerShadowIntensity * (1.0f - Lit) * 0.32f;
+	Col += RimMask * (RimIntensity * (0.08f + 0.55f * Lit));
+	Col += RimMask * InnerGlowIntensity * (0.18f + 0.45f * Lit);
+
+	OutColor = float4(max(Col, 0.0f), Alpha);
+}

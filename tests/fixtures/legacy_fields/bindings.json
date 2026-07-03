@@ -1,0 +1,23 @@
+{
+  "mvvm": {
+    "fields": [
+      {
+        "id": "title",
+        "path": "UI.Legacy.Title",
+        "value": "text"
+      }
+    ]
+  },
+  "fields": [
+    {
+      "fieldId": "title",
+      "target": "TitleLabel",
+      "property": "text"
+    }
+  ],
+  "bindings": {},
+  "controls": [],
+  "events": {
+    "channels": []
+  }
+}

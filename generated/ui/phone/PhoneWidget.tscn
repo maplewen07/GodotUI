@@ -1,0 +1,79 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://generated/ui/phone/PhoneWidget.cs" id="1_widget"]
+[ext_resource type="PackedScene" path="res://generated/ui/badge/BadgeWidget.tscn" id="2_scene"]
+
+[node name="PhoneWidget" type="Control"]
+script = ExtResource("1_widget")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -210.0
+offset_right = 220.0
+offset_bottom = 210.0
+
+[node name="Content" type="VBoxContainer" parent="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 18.0
+offset_right = -24.0
+offset_bottom = -18.0
+
+[node name="IconTexture" type="TextureRect" parent="Panel/Content"]
+custom_minimum_size = Vector2(32, 32)
+
+[node name="TitleLabel" type="Label" parent="Panel/Content"]
+text = ""
+
+[node name="StatusLabel" type="Label" parent="Panel/Content"]
+text = ""
+
+[node name="SearchInput" type="LineEdit" parent="Panel/Content"]
+placeholder_text = "Search"
+
+[node name="CountLabel" type="Label" parent="Panel/Content"]
+text = ""
+
+[node name="BatteryBar" type="ProgressBar" parent="Panel/Content"]
+max_value = 10.0
+value = 0.0
+
+[node name="DetailsLabel" type="Label" parent="Panel/Content"]
+text = "Details"
+
+[node name="Tabs" type="TabContainer" parent="Panel/Content"]
+custom_minimum_size = Vector2(320, 130)
+
+[node name="ContactsTab" type="Control" parent="Panel/Content/Tabs"]
+
+[node name="ContactsList" type="VBoxContainer" parent="Panel/Content/Tabs/ContactsTab"]
+
+[node name="ContactItemTemplate" type="HBoxContainer" parent="Panel/Content/Tabs/ContactsTab/ContactsList"]
+
+[node name="NameLabel" type="Label" parent="Panel/Content/Tabs/ContactsTab/ContactsList/ContactItemTemplate"]
+text = ""
+
+[node name="PhoneLabel" type="Label" parent="Panel/Content/Tabs/ContactsTab/ContactsList/ContactItemTemplate"]
+text = ""
+
+[node name="InfoTab" type="Control" parent="Panel/Content/Tabs"]
+
+[node name="InfoLabel" type="Label" parent="Panel/Content/Tabs/InfoTab"]
+text = "Info"
+
+[node name="BadgeHost" parent="Panel/Content" instance=ExtResource("2_scene")]
+
+[node name="ContactsButton" type="Button" parent="Panel/Content"]
+text = "Open Contacts"

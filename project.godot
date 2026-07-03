@@ -1,0 +1,25 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="GodotUI Manifest C#"
+run/main_scene="res://demo/Main.tscn"
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
+
+[autoload]
+
+ManifestMessageBus="*res://addons/manifest_ui/autoload/ManifestMessageBus.cs"
+ManifestUiRoot="*res://addons/manifest_ui/autoload/ManifestUiRoot.cs"
+ManifestUiManager="*res://addons/manifest_ui/autoload/ManifestUiManager.cs"
+
+[dotnet]
+
+project/assembly_name="GodotUI"

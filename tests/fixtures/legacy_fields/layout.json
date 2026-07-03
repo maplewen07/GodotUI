@@ -1,0 +1,17 @@
+{
+  "root": {
+    "id": "LegacyFieldsWidget",
+    "type": "Control",
+    "name": "LegacyFieldsWidget",
+    "children": [
+      {
+        "id": "TitleLabel",
+        "type": "Label",
+        "name": "TitleLabel",
+        "properties": {
+          "text": ""
+        }
+      }
+    ]
+  }
+}

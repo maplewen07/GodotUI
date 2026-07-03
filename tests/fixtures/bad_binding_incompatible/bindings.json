@@ -1,0 +1,12 @@
+{
+  "mvvm": {
+    "fields": [
+      { "id": "amount", "path": "UI.Bad.Amount", "value": "number" }
+    ]
+  },
+  "bindings": {
+    "PlainButton.value": "viewmodel:amount"
+  },
+  "controls": [],
+  "events": { "channels": [] }
+}

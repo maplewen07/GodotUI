@@ -1,0 +1,16 @@
+{
+  "assets": [
+    {
+      "id": "theme",
+      "relativePath": "assets/theme.json",
+      "kind": "theme",
+      "contentHash": "sha256:8c14958318d96deee221eca699bd326a73d52e4be2e4fe30f4536d07cc49c915",
+      "theme": {
+        "defaultFontAssetId": "missing_font",
+        "typeVariations": [
+          { "id": "BadPanel", "baseType": "Panel" }
+        ]
+      }
+    }
+  ]
+}

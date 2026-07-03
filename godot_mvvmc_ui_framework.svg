@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" font-family="Microsoft YaHei, PingFang SC, Arial, sans-serif">
+  <defs>
+    <filter id="shadow"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-opacity="0.14"/></filter>
+    <filter id="softShadow"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.09"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666666"/>
+    </marker>
+    <marker id="arrowWhite" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#AACCFF"/>
+    </marker>
+    <linearGradient id="titleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1A3060"/>
+      <stop offset="100%" style="stop-color:#3A60A0"/>
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1E6A3A"/>
+      <stop offset="100%" style="stop-color:#3A9A3A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="760" fill="#F0F3F8"/>
+
+  <rect x="0" y="0" width="1200" height="64" fill="url(#titleGradient)"/>
+  <text x="600" y="31" text-anchor="middle" fill="#FFFFFF" font-size="20" font-weight="bold">Godot MVVM-C UI Framework</text>
+  <text x="600" y="49" text-anchor="middle" fill="#AACCFF" font-size="12">Manifest 驱动生成 · Godot Control 场景 · Runtime 唯一入口闭环</text>
+
+  <text x="24" y="128" fill="#4A5A70" font-size="12" font-weight="bold">数据源</text>
+  <text x="24" y="268" fill="#4A5A70" font-size="12" font-weight="bold">编辑器管线</text>
+  <text x="24" y="435" fill="#4A5A70" font-size="12" font-weight="bold">运行时核心</text>
+  <text x="24" y="594" fill="#4A5A70" font-size="12" font-weight="bold">Godot 产物</text>
+  <line x1="118" y1="82" x2="118" y2="720" stroke="#CBD2DD" stroke-width="1" stroke-dasharray="5,4"/>
+
+  <rect x="140" y="84" width="1020" height="122" rx="10" fill="#FFFFFF" stroke="#5B8DD9" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="650" y="104" text-anchor="middle" fill="#2B5090" font-size="13" font-weight="bold">Source Manifests：唯一可信源</text>
+  <rect x="160" y="118" width="175" height="66" rx="6" fill="#E8F2FF" stroke="#84B0DC" stroke-width="1.2"/>
+  <text x="247" y="139" text-anchor="middle" fill="#2B5090" font-size="11" font-weight="bold">package.json</text>
+  <text x="247" y="155" text-anchor="middle" fill="#5A7AAA" font-size="10">packageId / paths</text>
+  <text x="247" y="170" text-anchor="middle" fill="#5A7AAA" font-size="10">Godot addon 配置</text>
+  <rect x="350" y="118" width="175" height="66" rx="6" fill="#E8F2FF" stroke="#84B0DC" stroke-width="1.2"/>
+  <text x="437" y="139" text-anchor="middle" fill="#2B5090" font-size="11" font-weight="bold">layout.json</text>
+  <text x="437" y="155" text-anchor="middle" fill="#5A7AAA" font-size="10">Control 节点树</text>
+  <text x="437" y="170" text-anchor="middle" fill="#5A7AAA" font-size="10">Label / Button / List</text>
+  <rect x="540" y="118" width="175" height="66" rx="6" fill="#E8F2FF" stroke="#84B0DC" stroke-width="1.2"/>
+  <text x="627" y="139" text-anchor="middle" fill="#2B5090" font-size="11" font-weight="bold">bindings.json</text>
+  <text x="627" y="155" text-anchor="middle" fill="#5A7AAA" font-size="10">fieldId / target</text>
+  <text x="627" y="170" text-anchor="middle" fill="#5A7AAA" font-size="10">signal -> handler</text>
+  <rect x="730" y="118" width="175" height="66" rx="6" fill="#E8F2FF" stroke="#84B0DC" stroke-width="1.2"/>
+  <text x="817" y="139" text-anchor="middle" fill="#2B5090" font-size="11" font-weight="bold">assets.json</text>
+  <text x="817" y="155" text-anchor="middle" fill="#5A7AAA" font-size="10">Texture / Font / Theme</text>
+  <text x="817" y="170" text-anchor="middle" fill="#5A7AAA" font-size="10">Resource 路径闭包</text>
+  <rect x="920" y="118" width="220" height="66" rx="6" fill="#E8F2FF" stroke="#84B0DC" stroke-width="1.2"/>
+  <text x="1030" y="139" text-anchor="middle" fill="#2B5090" font-size="11" font-weight="bold">codegen.json / strings.json</text>
+  <text x="1030" y="155" text-anchor="middle" fill="#5A7AAA" font-size="10">脚本命名 / 输出目录</text>
+  <text x="1030" y="170" text-anchor="middle" fill="#5A7AAA" font-size="10">中英文文案源数据</text>
+  <line x1="650" y1="206" x2="650" y2="224" stroke="#666666" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="140" y="224" width="1020" height="122" rx="10" fill="#FFFFFF" stroke="#9B6DC8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="650" y="244" text-anchor="middle" fill="#4A2070" font-size="13" font-weight="bold">Godot Editor Pipeline：EditorPlugin 或 CLI 跑生成</text>
+  <rect x="160" y="259" width="150" height="61" rx="6" fill="#F0E8FC" stroke="#C090D8" stroke-width="1.2"/>
+  <text x="235" y="279" text-anchor="middle" fill="#4A2070" font-size="11" font-weight="bold">LoadManifest</text>
+  <text x="235" y="296" text-anchor="middle" fill="#7A4AAA" font-size="10">读取 Source</text>
+  <rect x="328" y="259" width="150" height="61" rx="6" fill="#F0E8FC" stroke="#C090D8" stroke-width="1.2"/>
+  <text x="403" y="279" text-anchor="middle" fill="#4A2070" font-size="11" font-weight="bold">Validate</text>
+  <text x="403" y="296" text-anchor="middle" fill="#7A4AAA" font-size="10">路径 / 字段 / signal</text>
+  <rect x="496" y="259" width="150" height="61" rx="6" fill="#F0E8FC" stroke="#C090D8" stroke-width="1.2"/>
+  <text x="571" y="279" text-anchor="middle" fill="#4A2070" font-size="11" font-weight="bold">ImportResource</text>
+  <text x="571" y="296" text-anchor="middle" fill="#7A4AAA" font-size="10">生成资源索引</text>
+  <rect x="664" y="259" width="150" height="61" rx="6" fill="#F0E8FC" stroke="#C090D8" stroke-width="1.2"/>
+  <text x="739" y="279" text-anchor="middle" fill="#4A2070" font-size="11" font-weight="bold">GenerateScene</text>
+  <text x="739" y="296" text-anchor="middle" fill="#7A4AAA" font-size="10">写 .tscn Control</text>
+  <rect x="832" y="259" width="150" height="61" rx="6" fill="#F0E8FC" stroke="#C090D8" stroke-width="1.2"/>
+  <text x="907" y="279" text-anchor="middle" fill="#4A2070" font-size="11" font-weight="bold">GenerateScript</text>
+  <text x="907" y="296" text-anchor="middle" fill="#7A4AAA" font-size="10">View / Controller</text>
+  <rect x="1000" y="259" width="140" height="61" rx="6" fill="#F0E8FC" stroke="#C090D8" stroke-width="1.2"/>
+  <text x="1070" y="279" text-anchor="middle" fill="#4A2070" font-size="11" font-weight="bold">VerifyReport</text>
+  <text x="1070" y="296" text-anchor="middle" fill="#7A4AAA" font-size="10">可重建验证</text>
+  <path d="M310 289 L328 289" stroke="#7A4AAA" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M478 289 L496 289" stroke="#7A4AAA" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M646 289 L664 289" stroke="#7A4AAA" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M814 289 L832 289" stroke="#7A4AAA" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M982 289 L1000 289" stroke="#7A4AAA" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="650" y1="346" x2="650" y2="368" stroke="#666666" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="140" y="368" width="1020" height="152" rx="10" fill="#2D3E56" filter="url(#shadow)"/>
+  <text x="650" y="389" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="bold">Runtime MVVM-C Core：一次事件或一次状态推进只走一条链</text>
+  <text x="650" y="406" text-anchor="middle" fill="#AACCFF" font-size="10">External System / MessageBus -> UIManager -> Controller -> Store -> Binder -> Control</text>
+  <rect x="162" y="425" width="170" height="64" rx="6" fill="#FFFFFF" opacity="0.12"/>
+  <text x="247" y="447" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="bold">UIManager</text>
+  <text x="247" y="464" text-anchor="middle" fill="#AACCFF" font-size="10">唯一 Open / Close</text>
+  <text x="247" y="479" text-anchor="middle" fill="#AACCFF" font-size="10">load PackedScene</text>
+  <rect x="365" y="425" width="170" height="64" rx="6" fill="#FFFFFF" opacity="0.12"/>
+  <text x="450" y="447" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="bold">Controller</text>
+  <text x="450" y="464" text-anchor="middle" fill="#AACCFF" font-size="10">唯一业务入口</text>
+  <text x="450" y="479" text-anchor="middle" fill="#AACCFF" font-size="10">拥有 Store / Binder</text>
+  <rect x="568" y="425" width="170" height="64" rx="6" fill="#FFFFFF" opacity="0.12"/>
+  <text x="653" y="447" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="bold">ViewModelStore</text>
+  <text x="653" y="464" text-anchor="middle" fill="#AACCFF" font-size="10">显示状态唯一来源</text>
+  <text x="653" y="479" text-anchor="middle" fill="#AACCFF" font-size="10">DirtyFields</text>
+  <rect x="771" y="425" width="170" height="64" rx="6" fill="#FFFFFF" opacity="0.12"/>
+  <text x="856" y="447" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="bold">Binder</text>
+  <text x="856" y="464" text-anchor="middle" fill="#AACCFF" font-size="10">唯一 UI 刷新入口</text>
+  <text x="856" y="479" text-anchor="middle" fill="#AACCFF" font-size="10">Flush 后写 Control</text>
+  <rect x="974" y="425" width="150" height="64" rx="6" fill="#FFFFFF" opacity="0.12"/>
+  <text x="1049" y="447" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="bold">Platform Services</text>
+  <text x="1049" y="464" text-anchor="middle" fill="#AACCFF" font-size="10">MessageBus</text>
+  <text x="1049" y="479" text-anchor="middle" fill="#AACCFF" font-size="10">Localization / LayerStack</text>
+  <path d="M332 457 L365 457" stroke="#AACCFF" stroke-width="1.7" marker-end="url(#arrowWhite)"/>
+  <path d="M535 457 L568 457" stroke="#AACCFF" stroke-width="1.7" marker-end="url(#arrowWhite)"/>
+  <path d="M738 457 L771 457" stroke="#AACCFF" stroke-width="1.7" marker-end="url(#arrowWhite)"/>
+  <path d="M941 457 L974 457" stroke="#AACCFF" stroke-width="1.7" marker-end="url(#arrowWhite)"/>
+  <line x1="650" y1="520" x2="650" y2="538" stroke="#666666" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="140" y="538" width="1020" height="112" rx="10" fill="#FFFFFF" stroke="#3A9A3A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="650" y="558" text-anchor="middle" fill="#1A5A1A" font-size="13" font-weight="bold">Generated Godot Output：可删除重建，运行时不反读 Source JSON</text>
+  <rect x="160" y="574" width="172" height="48" rx="5" fill="#E8F8E8" stroke="#80C880" stroke-width="1"/>
+  <text x="246" y="593" text-anchor="middle" fill="#1A5A1A" font-size="11" font-weight="bold">.tscn Control Scene</text>
+  <text x="246" y="609" text-anchor="middle" fill="#5A9A5A" font-size="10">Panel -> Control</text>
+  <rect x="352" y="574" width="172" height="48" rx="5" fill="#E8F8E8" stroke="#80C880" stroke-width="1"/>
+  <text x="438" y="593" text-anchor="middle" fill="#1A5A1A" font-size="11" font-weight="bold">View Generated Script</text>
+  <text x="438" y="609" text-anchor="middle" fill="#5A9A5A" font-size="10">signal 只转发</text>
+  <rect x="544" y="574" width="172" height="48" rx="5" fill="#E8F8E8" stroke="#80C880" stroke-width="1"/>
+  <text x="630" y="593" text-anchor="middle" fill="#1A5A1A" font-size="11" font-weight="bold">Controller Partial</text>
+  <text x="630" y="609" text-anchor="middle" fill="#5A9A5A" font-size="10">手写业务逻辑</text>
+  <rect x="736" y="574" width="172" height="48" rx="5" fill="#E8F8E8" stroke="#80C880" stroke-width="1"/>
+  <text x="822" y="593" text-anchor="middle" fill="#1A5A1A" font-size="11" font-weight="bold">Theme / Resource</text>
+  <text x="822" y="609" text-anchor="middle" fill="#5A9A5A" font-size="10">Texture / Font / StyleBox</text>
+  <rect x="928" y="574" width="212" height="48" rx="5" fill="#E8F8E8" stroke="#80C880" stroke-width="1"/>
+  <text x="1034" y="593" text-anchor="middle" fill="#1A5A1A" font-size="11" font-weight="bold">Common Controls</text>
+  <text x="1034" y="609" text-anchor="middle" fill="#5A9A5A" font-size="10">Label / TextureRect / Button / List</text>
+
+  <rect x="140" y="670" width="1020" height="58" rx="10" fill="url(#greenGradient)" filter="url(#shadow)"/>
+  <text x="188" y="693" fill="#FFFFFF" font-size="13" font-weight="bold">运行时流程唯一性</text>
+  <rect x="300" y="683" width="132" height="28" rx="14" fill="#FFFFFF" opacity="0.16"/>
+  <text x="366" y="702" text-anchor="middle" fill="#E8FFE8" font-size="10">Control 不写 Store</text>
+  <rect x="448" y="683" width="142" height="28" rx="14" fill="#FFFFFF" opacity="0.16"/>
+  <text x="519" y="702" text-anchor="middle" fill="#E8FFE8" font-size="10">Binder 不调 Controller</text>
+  <rect x="606" y="683" width="150" height="28" rx="14" fill="#FFFFFF" opacity="0.16"/>
+  <text x="681" y="702" text-anchor="middle" fill="#E8FFE8" font-size="10">Controller 写 Store 后 Flush</text>
+  <rect x="772" y="683" width="142" height="28" rx="14" fill="#FFFFFF" opacity="0.16"/>
+  <text x="843" y="702" text-anchor="middle" fill="#E8FFE8" font-size="10">UIManager 唯一开关</text>
+  <rect x="930" y="683" width="118" height="28" rx="14" fill="#FFFFFF" opacity="0.16"/>
+  <text x="989" y="702" text-anchor="middle" fill="#E8FFE8" font-size="10">Signal 只进一次</text>
+  <rect x="1064" y="683" width="76" height="28" rx="14" fill="#FFFFFF" opacity="0.16"/>
+  <text x="1102" y="702" text-anchor="middle" fill="#E8FFE8" font-size="10">不读 Source</text>
+</svg>

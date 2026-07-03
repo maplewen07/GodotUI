@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "godot.manifest-ui.bindings.schema.json",
+  "type": "object",
+  "required": ["mvvm", "bindings", "controls", "events"],
+  "additionalProperties": false,
+  "properties": {
+    "mvvm": {
+      "type": "object",
+      "required": ["fields"],
+      "additionalProperties": true,
+      "properties": {
+        "updatePolicy": { "type": "string" },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "path", "value"],
+            "additionalProperties": true,
+            "properties": {
+              "id": { "type": "string" },
+              "path": { "type": "string" },
+              "value": { "enum": ["text", "bool", "number", "assetRef", "object"] },
+              "collection": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^viewmodel:.+"
+          },
+          {
+            "type": "object",
+            "required": ["source"],
+            "additionalProperties": false,
+            "properties": {
+              "source": { "type": "string", "pattern": "^viewmodel:.+" },
+              "converter": { "type": "string" },
+              "format": { "type": "string" },
+              "fallback": {}
+            }
+          }
+        ]
+      }
+    },
+    "repeaters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "target", "template", "source", "bindings"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "target": { "type": "string" },
+          "template": { "type": "string" },
+          "source": { "type": "string", "pattern": "^viewmodel:.+" },
+          "bindings": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                { "type": "string", "pattern": "^item:.+" },
+                {
+                  "type": "object",
+                  "required": ["source"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "source": { "type": "string", "pattern": "^item:.+" },
+                    "converter": { "type": "string" },
+                    "format": { "type": "string" },
+                    "fallback": {}
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "target", "property", "source"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "target": { "type": "string" },
+          "property": { "enum": ["text", "buttonPressed", "value", "selected"] },
+          "source": { "type": "string", "pattern": "^viewmodel:.+" }
+        }
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "target", "events"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "target": { "type": "string" },
+          "widgetClass": { "type": "string" },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["event", "handler", "channel"],
+              "additionalProperties": false,
+              "properties": {
+                "event": { "type": "string" },
+                "handler": { "type": "string" },
+                "channel": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "events": {
+      "type": "object",
+      "required": ["channels"],
+      "additionalProperties": false,
+      "properties": {
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "scope", "dispatch"],
+            "additionalProperties": true,
+            "properties": {
+              "id": { "type": "string" },
+              "scope": { "type": "string" },
+              "dispatch": { "type": "string" },
+              "payload": { "type": "array" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

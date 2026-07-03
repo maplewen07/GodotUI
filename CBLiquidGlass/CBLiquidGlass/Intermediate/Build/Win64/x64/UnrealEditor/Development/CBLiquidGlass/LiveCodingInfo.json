@@ -1,0 +1,22 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.CBLiquidGlass.1.cpp.obj": [
+			"CBLiquidGlass.init.gen.cpp.obj",
+			"CBLiquidGlassButton.gen.cpp.obj",
+			"CBLiquidGlassButtonSlot.gen.cpp.obj",
+			"CBLiquidGlassExtras.gen.cpp.obj",
+			"CBLiquidGlassSlider.gen.cpp.obj"
+		],
+		"Module.CBLiquidGlass.2.cpp.obj": [
+			"CBLiquidGlassSlot.gen.cpp.obj",
+			"CBLiquidGlassText.gen.cpp.obj",
+			"CBLiquidGlassTypes.gen.cpp.obj",
+			"CBLiquidGlassWidget.gen.cpp.obj",
+			"PerModuleInline.gen.cpp.obj"
+		],
+		"Module.CBLiquidGlass.3.cpp.obj": [
+			"CBLiquidGlassControls.gen.cpp.obj"
+		]
+	}
+}

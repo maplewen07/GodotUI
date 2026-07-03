@@ -1,0 +1,24 @@
+# 2026-07-03 Manifest System Upgrade
+
+- Task: upgrade the Godot C# UI manifest layer toward the Matrix package model.
+- Entry: `ui/<system>/package.json` is now the canonical package entrypoint.
+- Tooling: `ManifestUiGen` now supports `validate`, `generate`, and `migrate --check` against `package.json`.
+- Validation: added schemaVersion checks, package-relative file checks, node id/path uniqueness, mvvm field coverage, binding target checks, control event target checks, undeclared channel checks, codegen output path checks, and asset hash validation.
+- Reports: `validate --write-report` emits `export/manifest_report.md` and `export/godot_import_manifest.json`.
+- Schemas: added shared schema snapshots under `schemas/manifest-ui/` and local snapshots under `ui/phone/schemas/`.
+- Fixtures: added `tests/fixtures/bad_manifest` for unknown binding target and undeclared channel diagnostics.
+- Follow-up hardening: `godot.scenePath` now must match the generated `.tscn`; control event channels are required; `pressed` is limited to Button nodes; asset size and asset path diagnostics were tightened.
+- Canonical source follow-up: `bindings.json` schemaVersion 1 generation now reads canonical `bindings` and `controls`; legacy top-level `fields` and array-form `events` fail validation. `ui/phone/bindings.json` removed the legacy `fields` block.
+- Build hygiene: `GodotUI.csproj` excludes the unrelated `CBLiquidGlass/**/*.cs` Unreal plugin files from Godot C# compilation.
+- Verified:
+  - `dotnet build tools\ManifestUiGen\ManifestUiGen.csproj`
+  - `dotnet run --no-build --project tools\ManifestUiGen -- validate ui\phone\package.json --write-report`
+  - `dotnet run --no-build --project tools\ManifestUiGen -- migrate --check ui\phone\package.json`
+  - `dotnet run --no-build --project tools\ManifestUiGen -- generate ui\phone\package.json`
+  - `dotnet run --no-build --project tools\ManifestUiGen -- validate tests\fixtures\bad_manifest\package.json` fails with the expected unknown binding target and undeclared channel errors.
+  - `dotnet run --no-build --project tools\ManifestUiGen -- validate tests\fixtures\legacy_fields\package.json` fails because legacy `bindings.json.fields` is rejected.
+  - `dotnet build GodotUI.csproj`
+  - `godot --headless --build-solutions --quit` exits 0; Godot 4.6.2 still prints a Mono hot-reload watcher timer warning in headless mode.
+  - `godot --headless --path . --scene res://tests/SelfCheck.tscn`
+  - `godot --headless --path . --scene res://demo/Main.tscn --quit-after 5`
+- Skipped: no EditorPlugin, theme conversion, localization, shared components, complex controls, repeater/list runtime, or visual designer import.

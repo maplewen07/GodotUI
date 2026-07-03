@@ -1,0 +1,33 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\source\\cbliquidglass\\private\\cbliquidglassrenderer.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\ue\\cbengine57\\intermediate\\build\\win64\\x64\\cbengine57editor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\cbliquidglass\\definitions.cbliquidglass.h",
+            "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\source\\cbliquidglass\\private\\cbliquidglassrenderer.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\pixelshaderutils.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\commonrenderresources.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\shaderparameterstruct.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphresources.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rhi\\public\\rhitransientresourceallocator.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphparameter.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphresources.inl",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphevent.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphevent.inl",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphutils.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphbuilder.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphblackboard.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\core\\public\\misc\\generatedtypename.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphpass.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphparameters.inl",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphtrace.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphvalidation.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\core\\public\\experimental\\containers\\robinhoodhashtable.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\rendercore\\public\\rendergraphbuilder.inl"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

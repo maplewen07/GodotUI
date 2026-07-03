@@ -1,0 +1,10 @@
+{
+  "assets": [
+    {
+      "id": "icon",
+      "relativePath": "assets/icon.tres",
+      "kind": "texture",
+      "contentHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

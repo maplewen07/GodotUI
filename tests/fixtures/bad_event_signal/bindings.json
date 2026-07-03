@@ -1,0 +1,19 @@
+{
+  "mvvm": { "fields": [] },
+  "bindings": {},
+  "controls": [
+    {
+      "id": "Button",
+      "target": "Button",
+      "widgetClass": "Button",
+      "events": [
+        { "event": "tab_changed", "handler": "bad_tab", "channel": "bad.tab" }
+      ]
+    }
+  ],
+  "events": {
+    "channels": [
+      { "id": "bad.tab", "scope": "bad", "dispatch": "immediate", "payload": [] }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "root": {
+    "id": "BadgeWidget",
+    "type": "Control",
+    "name": "BadgeWidget",
+    "properties": {
+      "custom_minimum_size": [180, 24]
+    },
+    "children": [
+      {
+        "id": "BadgeLabel",
+        "type": "Label",
+        "name": "BadgeLabel",
+        "properties": {
+          "text": ""
+        }
+      }
+    ]
+  }
+}

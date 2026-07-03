@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "packageId": "ui.bad_event_signal",
+  "displayName": "Bad Event Signal",
+  "designResolution": [320, 240],
+  "assets": "assets.json",
+  "layout": "layout.json",
+  "bindings": "bindings.json",
+  "codegen": "codegen.json",
+  "validation": "validation.json",
+  "godot": {
+    "widgetClass": "BadEventSignalWidget",
+    "controllerClass": "GodotUi.Tests.BadController",
+    "outputDir": "generated/ui/bad_event_signal",
+    "scenePath": "res://generated/ui/bad_event_signal/BadEventSignalWidget.tscn"
+  }
+}

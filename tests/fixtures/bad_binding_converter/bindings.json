@@ -1,0 +1,15 @@
+{
+  "mvvm": {
+    "fields": [
+      { "id": "title", "path": "UI.Bad.Title", "value": "text" }
+    ]
+  },
+  "bindings": {
+    "TitleLabel.text": {
+      "source": "viewmodel:title",
+      "converter": "missingConverter"
+    }
+  },
+  "controls": [],
+  "events": { "channels": [] }
+}

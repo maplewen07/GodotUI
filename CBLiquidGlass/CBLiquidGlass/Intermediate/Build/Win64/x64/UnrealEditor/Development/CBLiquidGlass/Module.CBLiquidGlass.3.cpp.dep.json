@@ -1,0 +1,43 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\cbliquidglass\\module.cbliquidglass.3.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\ue\\cbengine57\\intermediate\\build\\win64\\x64\\cbengine57editor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\cbliquidglass\\definitions.cbliquidglass.h",
+            "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\intermediate\\build\\win64\\unrealeditor\\inc\\cbliquidglass\\uht\\cbliquidglasscontrols.gen.cpp",
+            "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\source\\cbliquidglass\\public\\cbliquidglasscontrols.h",
+            "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\source\\cbliquidglass\\public\\cbliquidglasstypes.h",
+            "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\intermediate\\build\\win64\\unrealeditor\\inc\\cbliquidglass\\uht\\cbliquidglasstypes.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\umg\\public\\components\\widget.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\umg\\public\\binding\\states\\widgetstatebitfield.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\widgetstatebitfield.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\fieldnotification\\public\\fieldnotificationdeclaration.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\fieldnotification\\public\\ifieldnotificationclassdescriptor.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\fieldnotification\\public\\inotifyfieldvaluechanged.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\fieldnotification\\uht\\inotifyfieldvaluechanged.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\umg\\public\\components\\visual.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\visual.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\umg\\public\\components\\slatewrappertypes.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\slatewrappertypes.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\umg\\public\\slate\\widgettransform.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\widgettransform.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\umg\\public\\blueprint\\widgetnavigation.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\coreuobject\\public\\structutils\\instancedstruct.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\coreuobject\\public\\structutils\\structutils.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\coreuobject\\uht\\instancedstruct.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\slatecore\\public\\types\\navigationmetadata.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\slatecore\\public\\input\\navigationrouting.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\slatecore\\uht\\navigationrouting.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\slatecore\\public\\input\\navigationmethod.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\slatecore\\public\\input\\hittestgrid.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\slatecore\\uht\\navigationmethod.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\widgetnavigation.generated.h",
+            "d:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\widget.generated.h",
+            "e:\\ue\\cbengine57\\plugins\\cbliquidglass\\intermediate\\build\\win64\\unrealeditor\\inc\\cbliquidglass\\uht\\cbliquidglasscontrols.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

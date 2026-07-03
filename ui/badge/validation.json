@@ -1,0 +1,10 @@
+{
+  "commandletInputWhitelist": [
+    "assets.json",
+    "layout.json",
+    "bindings.json",
+    "codegen.json",
+    "validation.json"
+  ],
+  "checks": {}
+}

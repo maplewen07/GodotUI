@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "packageId": "ui.phone",
+  "displayName": "Phone",
+  "designResolution": [1280, 720],
+  "assets": "assets.json",
+  "layout": "layout.json",
+  "bindings": "bindings.json",
+  "codegen": "codegen.json",
+  "validation": "validation.json",
+  "godot": {
+    "systemName": "phone",
+    "widgetClass": "PhoneWidget",
+    "controllerClass": "GodotUi.Sample.Phone.PhoneController",
+    "namespace": "GodotUi.Generated.Phone",
+    "outputDir": "generated/ui/phone",
+    "scenePath": "res://generated/ui/phone/PhoneWidget.tscn"
+  }
+}

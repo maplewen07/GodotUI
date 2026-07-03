@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "packageId": "ui.badge",
+  "displayName": "Badge",
+  "designResolution": [320, 80],
+  "assets": "assets.json",
+  "layout": "layout.json",
+  "bindings": "bindings.json",
+  "codegen": "codegen.json",
+  "validation": "validation.json",
+  "godot": {
+    "systemName": "badge",
+    "widgetClass": "BadgeWidget",
+    "controllerClass": "GodotUi.Sample.Badge.BadgeController",
+    "namespace": "GodotUi.Generated.Badge",
+    "outputDir": "generated/ui/badge",
+    "scenePath": "res://generated/ui/badge/BadgeWidget.tscn"
+  }
+}

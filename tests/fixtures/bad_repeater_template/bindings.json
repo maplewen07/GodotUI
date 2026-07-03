@@ -1,0 +1,19 @@
+{
+  "mvvm": {
+    "fields": [
+      { "id": "contacts", "path": "UI.Bad.Contacts", "value": "object", "collection": "list" }
+    ]
+  },
+  "bindings": {},
+  "repeaters": [
+    {
+      "id": "badRepeater",
+      "target": "List",
+      "template": "List/MissingTemplate",
+      "source": "viewmodel:contacts",
+      "bindings": { "Name.text": "item:name" }
+    }
+  ],
+  "controls": [],
+  "events": { "channels": [] }
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "packageId": "ui.bad_converter",
+  "displayName": "Bad Binding Converter",
+  "designResolution": [320, 240],
+  "assets": "assets.json",
+  "layout": "layout.json",
+  "bindings": "bindings.json",
+  "codegen": "codegen.json",
+  "validation": "validation.json",
+  "godot": {
+    "systemName": "bad_converter",
+    "widgetClass": "BadConverterWidget",
+    "controllerClass": "GodotUi.Sample.Bad.BadController",
+    "namespace": "GodotUi.Generated.BadConverter",
+    "outputDir": "generated/ui/bad_converter",
+    "scenePath": "res://generated/ui/bad_converter/BadConverterWidget.tscn"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "root": {
+    "id": "Root",
+    "type": "Control",
+    "name": "Root",
+    "children": [
+      { "id": "Title", "type": "Label", "name": "Title" }
+    ]
+  }
+}

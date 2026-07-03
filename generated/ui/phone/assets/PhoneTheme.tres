@@ -1,0 +1,8 @@
+[gd_resource type="Theme" load_steps=2 format=3]
+
+[ext_resource type="Font" path="res://ui/phone/assets/phone_font.tres" id="1_default_font"]
+
+[resource]
+default_font = ExtResource("1_default_font")
+default_font_size = 14
+PhonePanel/base_type = &"Panel"

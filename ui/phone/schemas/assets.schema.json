@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "godot.manifest-ui.assets.schema.json",
+  "type": "object",
+  "required": ["assets"],
+  "additionalProperties": false,
+  "properties": {
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "relativePath", "kind", "contentHash"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "relativePath": { "type": "string", "pattern": "^assets/.+" },
+          "kind": { "enum": ["texture", "font", "theme"] },
+          "contentHash": { "type": "string", "pattern": "^sha256:[0-9a-fA-F]{64}$" },
+          "size": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 1 },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "import": { "type": "object" },
+          "defaultFont": { "type": "boolean" },
+          "defaultFontSize": { "type": "integer", "minimum": 0 },
+          "theme": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "outputPath": { "type": "string" },
+              "defaultFontAssetId": { "type": "string" },
+              "defaultFontSize": { "type": "integer", "minimum": 0 },
+              "typeVariations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "baseType"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": { "type": "string" },
+                    "baseType": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
