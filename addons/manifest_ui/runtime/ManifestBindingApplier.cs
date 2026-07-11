@@ -4,17 +4,39 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Godot;
 
 namespace GodotUi.Manifest;
 
 public static class ManifestBindingApplier
 {
+    private static readonly ConditionalWeakTable<Control, Dictionary<string, RepeaterState>> RepeaterStates = new();
+
     public static void Apply(Control root, ViewModelStore store, ManifestBindingSet bindings)
+    {
+        ApplyCore(root, store, bindings, store.IsDirty);
+    }
+
+    internal static void Apply(
+        Control root,
+        ViewModelStore store,
+        ManifestBindingSet bindings,
+        ViewModelStoreCursor cursor,
+        long targetRevision)
+    {
+        ApplyCore(root, store, bindings, fieldId => cursor.ShouldApply(store, fieldId, targetRevision));
+    }
+
+    private static void ApplyCore(
+        Control root,
+        ViewModelStore store,
+        ManifestBindingSet bindings,
+        Func<string, bool> shouldApply)
     {
         foreach (var binding in bindings.Properties)
         {
-            if (!store.IsDirty(binding.FieldId))
+            if (!shouldApply(binding.FieldId))
             {
                 continue;
             }
@@ -34,7 +56,44 @@ public static class ManifestBindingApplier
             ApplyValue(root.GetNode<Control>(binding.TargetPath), NormalizeProperty(binding.Property), value);
         }
 
-        ApplyRepeaters(root, store, bindings);
+        ApplyLocalizations(root, store, bindings, shouldApply);
+        ApplyRepeaters(root, store, bindings, shouldApply);
+    }
+
+    private static void ApplyLocalizations(
+        Control root,
+        ViewModelStore store,
+        ManifestBindingSet bindings,
+        Func<string, bool> shouldApply)
+    {
+        foreach (var binding in bindings.Localizations)
+        {
+            if (binding.ArgumentFieldIds.Count > 0 && !binding.ArgumentFieldIds.Any(shouldApply))
+            {
+                continue;
+            }
+
+            var translated = root.Tr(binding.Key, binding.Context);
+            object? value = translated;
+            if (binding.ArgumentFieldIds.Count > 0)
+            {
+                var arguments = binding.ArgumentFieldIds.Select(store.Get).ToArray();
+                try
+                {
+                    value = string.Format(CultureInfo.CurrentCulture, translated, arguments);
+                }
+                catch (FormatException exception)
+                {
+                    ManifestRuntimeDiagnostics.Report(
+                        "MUIR4001",
+                        ManifestRuntimeDiagnosticSeverity.Warning,
+                        $"Localized string '{binding.Key}' has an invalid format.",
+                        exception);
+                }
+            }
+
+            ApplyValue(root.GetNode<Control>(binding.TargetPath), NormalizeProperty(binding.Property), value);
+        }
     }
 
     private static string ResolveConverter(ManifestPropertyBinding binding)
@@ -44,16 +103,7 @@ public static class ManifestBindingApplier
             return binding.Converter;
         }
 
-        return NormalizeProperty(binding.Property) switch
-        {
-            "text" => "string",
-            "visible" => "bool",
-            "enabled" => "bool",
-            "value" => "number",
-            "texture" => "texture",
-            "themeClass" => "string",
-            _ => "",
-        };
+        return ResolveDefaultConverter(binding.Property);
     }
 
     private static string ResolveConverter(ManifestItemBinding binding)
@@ -63,7 +113,12 @@ public static class ManifestBindingApplier
             return binding.Converter;
         }
 
-        return NormalizeProperty(binding.Property) switch
+        return ResolveDefaultConverter(binding.Property);
+    }
+
+    private static string ResolveDefaultConverter(string property)
+    {
+        return NormalizeProperty(property) switch
         {
             "text" => "string",
             "visible" => "bool",
@@ -75,11 +130,15 @@ public static class ManifestBindingApplier
         };
     }
 
-    private static void ApplyRepeaters(Control root, ViewModelStore store, ManifestBindingSet bindings)
+    private static void ApplyRepeaters(
+        Control root,
+        ViewModelStore store,
+        ManifestBindingSet bindings,
+        Func<string, bool> shouldApply)
     {
         foreach (var repeater in bindings.Repeaters)
         {
-            if (!store.IsDirty(repeater.FieldId))
+            if (!shouldApply(repeater.FieldId))
             {
                 continue;
             }
@@ -88,28 +147,120 @@ public static class ManifestBindingApplier
             var template = root.GetNode<Control>(repeater.TemplatePath);
             template.Visible = false;
 
-            foreach (var oldItem in container.GetChildren().OfType<Control>().Where(child => child.HasMeta("manifest_repeater")).ToArray())
+            var stateKey = $"{repeater.TargetPath}\n{repeater.TemplatePath}\n{repeater.FieldId}";
+            var rootStates = RepeaterStates.GetOrCreateValue(root);
+            if (!rootStates.TryGetValue(stateKey, out var state))
             {
-                container.RemoveChild(oldItem);
-                oldItem.Free();
+                state = new RepeaterState();
+                rootStates[stateKey] = state;
             }
 
-            if (!store.TryGet(repeater.FieldId, out var collection))
+            var items = store.TryGet(repeater.FieldId, out var collection)
+                ? EnumerateItems(collection).ToArray()
+                : Array.Empty<object?>();
+            var nextActive = new Dictionary<string, Control>(StringComparer.Ordinal);
+            var keyCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+            var insertionIndex = template.GetParent() == container ? template.GetIndex() + 1 : container.GetChildCount();
+
+            for (var index = 0; index < items.Length; index++)
             {
-                continue;
+                var item = items[index];
+                var baseKey = ResolveItemKey(item, repeater.KeyFieldId, index);
+                var key = baseKey;
+                if (keyCounts.TryGetValue(baseKey, out var duplicateIndex))
+                {
+                    do
+                    {
+                        duplicateIndex++;
+                        key = $"{baseKey}#{duplicateIndex}";
+                    }
+                    while (nextActive.ContainsKey(key));
+
+                    keyCounts[baseKey] = duplicateIndex;
+                }
+                else
+                {
+                    keyCounts[baseKey] = 0;
+                    while (nextActive.ContainsKey(key))
+                    {
+                        duplicateIndex++;
+                        key = $"{baseKey}#{duplicateIndex}";
+                    }
+                }
+
+                if (!state.Active.Remove(key, out var control) || !GodotObject.IsInstanceValid(control))
+                {
+                    control = TakeFromPool(state) ?? (Control)template.Duplicate();
+                }
+
+                control.Name = $"{template.Name}_{index}";
+                control.Visible = true;
+                control.SetMeta("manifest_repeater", repeater.TemplatePath);
+                control.SetMeta("manifest_repeater_key", key);
+                if (control.GetParent() != container)
+                {
+                    container.AddChild(control);
+                }
+
+                container.MoveChild(control, Math.Min(insertionIndex + index, container.GetChildCount() - 1));
+                ApplyItem(control, item, repeater, bindings);
+                nextActive[key] = control;
             }
 
-            var index = 0;
-            foreach (var item in EnumerateItems(collection))
+            foreach (var removed in state.Active.Values)
             {
-                var clone = (Control)template.Duplicate();
-                clone.Name = $"{template.Name}_{index++}";
-                clone.Visible = true;
-                clone.SetMeta("manifest_repeater", repeater.TemplatePath);
-                container.AddChild(clone);
-                ApplyItem(clone, item, repeater, bindings);
+                if (!GodotObject.IsInstanceValid(removed))
+                {
+                    continue;
+                }
+
+                removed.Visible = false;
+                removed.RemoveMeta("manifest_repeater");
+                removed.RemoveMeta("manifest_repeater_key");
+                state.Pool.Push(removed);
+            }
+
+            state.Active = nextActive;
+            TrimPool(state, repeater.PoolCapacity);
+        }
+    }
+
+    private static Control? TakeFromPool(RepeaterState state)
+    {
+        while (state.Pool.Count > 0)
+        {
+            var control = state.Pool.Pop();
+            if (GodotObject.IsInstanceValid(control))
+            {
+                return control;
             }
         }
+
+        return null;
+    }
+
+    private static void TrimPool(RepeaterState state, int capacity)
+    {
+        while (state.Pool.Count > capacity)
+        {
+            var control = state.Pool.Pop();
+            if (GodotObject.IsInstanceValid(control))
+            {
+                control.GetParent()?.RemoveChild(control);
+                control.Free();
+            }
+        }
+    }
+
+    private static string ResolveItemKey(object? item, string keyFieldId, int index)
+    {
+        var effectiveKeyField = string.IsNullOrWhiteSpace(keyFieldId) ? "id" : keyFieldId;
+        if (TryGetItemValue(item, effectiveKeyField, out var value) && value is not null)
+        {
+            return Convert.ToString(value, CultureInfo.InvariantCulture) ?? index.ToString(CultureInfo.InvariantCulture);
+        }
+
+        return index.ToString(CultureInfo.InvariantCulture);
     }
 
     private static IEnumerable<object?> EnumerateItems(object? value)
@@ -254,5 +405,11 @@ public static class ManifestBindingApplier
     private static string NormalizeProperty(string property)
     {
         return string.Equals(property, "visibility", StringComparison.Ordinal) ? "visible" : property;
+    }
+
+    private sealed class RepeaterState
+    {
+        public Dictionary<string, Control> Active { get; set; } = new(StringComparer.Ordinal);
+        public Stack<Control> Pool { get; } = new();
     }
 }

@@ -7,8 +7,6 @@
     "validation.json"
   ],
   "checks": {
-    "manifestValidation": true,
-    "godotBuild": true,
-    "runtimeSelfCheck": true
+    "manifestValidation": true
   }
 }

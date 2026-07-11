@@ -1,0 +1,25 @@
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using GodotUi.Manifest.Tooling;
+
+var forwarded = new List<string>(args);
+var resultFileIndex = forwarded.IndexOf("--result-file");
+if (resultFileIndex < 0 || resultFileIndex + 1 >= forwarded.Count)
+{
+    Console.Error.WriteLine("Missing --result-file <path>.");
+    return ManifestUiTool.UsageOrEnvironmentFailure;
+}
+
+var resultFile = Path.GetFullPath(forwarded[resultFileIndex + 1]);
+forwarded.RemoveRange(resultFileIndex, 2);
+var result = ManifestUiTool.Execute(forwarded);
+var options = new JsonSerializerOptions
+{
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    WriteIndented = true,
+    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+};
+Directory.CreateDirectory(Path.GetDirectoryName(resultFile)!);
+File.WriteAllText(resultFile, JsonSerializer.Serialize(result, options) + Environment.NewLine, new UTF8Encoding(false));
+return result.ExitCode;

@@ -1,6 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Godot;
 using GodotUi.Manifest;
 
@@ -9,23 +15,132 @@ namespace GodotUi.Tests;
 public partial class SelfCheck : Node
 {
     private const string PhoneScene = "res://generated/ui/phone/PhoneWidget.tscn";
+    private readonly List<CheckResult> _results = new();
 
     public override async void _Ready()
     {
         try
         {
-            CheckStore();
-            CheckBus();
-            CheckBindingConverters();
-            await CheckLifecycle();
-            GD.Print("Manifest UI self-check passed.");
-            GetTree().Quit(0);
+            await RunCaseAsync("Store", () => RunSync(CheckStore));
+            await RunCaseAsync("MessageBus", () => RunSync(CheckBus));
+            await RunCaseAsync("BindingConverters", () => RunSync(CheckBindingConverters));
+#if TOOLS
+            await RunCaseAsync("EngineVerify", () => RunSync(RuntimeContractChecks.CheckEngineVerify));
+#endif
+            await RunCaseAsync("StoreAndServices", () => RunSync(RuntimeContractChecks.CheckStoreAndServices));
+            await RunCaseAsync("KeyedRepeaterPool", () => RunSync(RuntimeContractChecks.CheckKeyedRepeaterPool));
+            await RunCaseAsync("AsyncLifecycleAndModal", () => RuntimeContractChecks.CheckBusAndAsyncLifecycle(this));
+            await RunCaseAsync("ReplaceCancellationAndExternalFree", () => RuntimeContractChecks.CheckReplaceCancellationAndExternalFree(this));
+            await RunCaseAsync("CatalogReplacementFailureAndLocalization", () => RuntimeContractChecks.CheckCatalogReplacementAndLocalization(this));
+            await RunCaseAsync("LifecycleStress1000", () => RuntimeContractChecks.CheckLifecycleStress(this, 1000));
+            await RunCaseAsync("LegacyImmediateLifecycle", CheckLifecycle);
+
+            for (var pass = 0; pass < 3; pass++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                await Task.Delay(5);
+            }
+
+            var reportPath = WriteJUnitReport();
+            var failures = _results.Where(result => result.Exception is not null).ToArray();
+            GD.Print($"Manifest UI JUnit report: {reportPath}");
+            if (failures.Length == 0)
+            {
+                GD.Print($"Manifest UI self-check passed ({_results.Count} checks).");
+                GetTree().Quit(0);
+                return;
+            }
+
+            foreach (var failure in failures)
+            {
+                GD.PushError($"{failure.Name}: {failure.Exception}");
+            }
+            GetTree().Quit(1);
         }
         catch (Exception ex)
         {
             GD.PushError(ex.ToString());
             GetTree().Quit(1);
         }
+    }
+
+    private async Task RunCaseAsync(string name, Func<Task> check)
+    {
+        var filter = System.Environment.GetEnvironmentVariable("MANIFEST_UI_TEST_FILTER");
+        if (!string.IsNullOrWhiteSpace(filter) &&
+            !name.Contains(filter, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        var stopwatch = Stopwatch.StartNew();
+        Exception? failure = null;
+        try
+        {
+            await check();
+            GD.Print($"PASS {name}");
+        }
+        catch (Exception ex)
+        {
+            failure = ex;
+            GD.PushError($"FAIL {name}: {ex.Message}");
+        }
+        finally
+        {
+            stopwatch.Stop();
+            _results.Add(new CheckResult(name, stopwatch.Elapsed, failure));
+        }
+    }
+
+    private static Task RunSync(Action check)
+    {
+        check();
+        return Task.CompletedTask;
+    }
+
+    private string WriteJUnitReport()
+    {
+        var configuredPath = System.Environment.GetEnvironmentVariable("MANIFEST_UI_JUNIT_PATH");
+        var reportPath = string.IsNullOrWhiteSpace(configuredPath)
+            ? ProjectSettings.GlobalizePath("user://test-results/manifest-ui-self-check.xml")
+            : Path.IsPathRooted(configuredPath!)
+                ? configuredPath!
+                : Path.GetFullPath(configuredPath!, ProjectSettings.GlobalizePath("res://"));
+        Directory.CreateDirectory(Path.GetDirectoryName(reportPath)!);
+
+        var failures = _results.Count(result => result.Exception is not null);
+        var suite = new XElement(
+            "testsuite",
+            new XAttribute("name", "ManifestUi.Godot47.Headless"),
+            new XAttribute("tests", _results.Count),
+            new XAttribute("failures", failures),
+            new XAttribute("errors", 0),
+            new XAttribute("time", _results.Sum(result => result.Elapsed.TotalSeconds).ToString("0.000", CultureInfo.InvariantCulture)),
+            new XAttribute("timestamp", DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture)),
+            _results.Select(CreateJUnitCase));
+        var xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + suite + "\n";
+        File.WriteAllText(reportPath, xml, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        return reportPath;
+    }
+
+    private static XElement CreateJUnitCase(CheckResult result)
+    {
+        var testCase = new XElement(
+            "testcase",
+            new XAttribute("classname", "GodotUi.Tests.SelfCheck"),
+            new XAttribute("name", result.Name),
+            new XAttribute("time", result.Elapsed.TotalSeconds.ToString("0.000", CultureInfo.InvariantCulture)));
+        if (result.Exception is not null)
+        {
+            testCase.Add(new XElement(
+                "failure",
+                new XAttribute("type", result.Exception.GetType().FullName ?? "System.Exception"),
+                new XAttribute("message", result.Exception.Message),
+                result.Exception.ToString()));
+        }
+
+        return testCase;
     }
 
     private static void CheckStore()
@@ -174,4 +289,6 @@ public partial class SelfCheck : Node
             throw new InvalidOperationException(message);
         }
     }
+
+    private sealed record CheckResult(string Name, TimeSpan Elapsed, Exception? Exception);
 }

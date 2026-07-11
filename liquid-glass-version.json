@@ -1,0 +1,8 @@
+{
+  "version": "0.1.0-alpha.1",
+  "tagPrefix": "liquid-glass-v",
+  "godotVersion": "4.7.0",
+  "dotnetTargetFramework": "net8.0",
+  "releaseChannel": "alpha",
+  "implementation": "clean-room"
+}

@@ -1,0 +1,6 @@
+[gd_resource type="Translation" format=3]
+
+[resource]
+resource_name = "example.inventory.en"
+locale = "en"
+messages = {&"inventory.empty": "No inventory items match the filter.", &"inventory.refresh": "Refresh", &"inventory.title": "Service-backed inventory"}

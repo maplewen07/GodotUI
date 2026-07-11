@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "toolVersion": "0.1.0-alpha.1",
+  "packageId": "example.inventory",
+  "inputHash": "sha256:478a8af3f03de51da6958e5b9302046a6a33ecab42c1846b32618aa61aa8862f",
+  "inputs": [
+    {
+      "path": "ui/inventory/assets.json",
+      "contentHash": "sha256:3ff5f36c9d4b232659ddd88f4d22f3f01d313884e5a22190bda7a07a235333fa"
+    },
+    {
+      "path": "ui/inventory/bindings.json",
+      "contentHash": "sha256:dc6f849205804d27c2da888336840fbd4029e450d9b204e8ed3ddc2e84325278"
+    },
+    {
+      "path": "ui/inventory/codegen.json",
+      "contentHash": "sha256:908cd562fee5e061b7ebcbb5dd580160db024a113e95a34ac535041daf1079ba"
+    },
+    {
+      "path": "ui/inventory/layout.json",
+      "contentHash": "sha256:ba4808fc4d7659667b323b9f732216c6b5567ddc18ad997967da8ab7f323213b"
+    },
+    {
+      "path": "ui/inventory/package.json",
+      "contentHash": "sha256:6f01e6d07ced71d37f2ccb7812097c96b4482e911eed19fd6e0bf2130bd6e6aa"
+    },
+    {
+      "path": "ui/inventory/strings.json",
+      "contentHash": "sha256:2ae447bc4f6670d0c4f2cb4dbb5d84e807f564e5a9087c2faa80ca5abe08028a"
+    },
+    {
+      "path": "ui/inventory/validation.json",
+      "contentHash": "sha256:9682b20817ddf9b7b199789e925a6a9309c397251bb44996e38d2f9b08132b0e"
+    }
+  ],
+  "managedFiles": [
+    {
+      "path": "InventoryWidget.Catalog.g.cs",
+      "kind": "catalog",
+      "contentHash": "sha256:46ffb36a0d33684f32c50778569ddf8c604d65f0acb28a05fb351c06d22ec6ac"
+    },
+    {
+      "path": "InventoryWidget.Services.g.cs",
+      "kind": "services",
+      "contentHash": "sha256:c154bbf9e7f8d5069573eafd3a286a93d6f0a2d14ec3819fc4b7214881b3f7c6"
+    },
+    {
+      "path": "InventoryWidget.g.cs",
+      "kind": "code",
+      "contentHash": "sha256:6d7e164f04490dedb8b58b56ce20f21aff4962fec412090234021596a0f453f8"
+    },
+    {
+      "path": "InventoryWidget.tscn",
+      "kind": "scene",
+      "contentHash": "sha256:cfac25a88e3273901ebe0c8acb7c1edf3f7afdd3bbe7da7d368b62f826961b01"
+    },
+    {
+      "path": "translations/inventory.en.tres",
+      "kind": "translation",
+      "contentHash": "sha256:bad0861453dfc3d00db93a2fff775d429b269ade582c67833002b6e51faadb18"
+    },
+    {
+      "path": "translations/inventory.zh_CN.tres",
+      "kind": "translation",
+      "contentHash": "sha256:b40eb2ecc45896d39bde5ce80d03eddc9fef1de93d689d41fd6096bd7387dc58"
+    }
+  ]
+}

@@ -4,11 +4,13 @@ using GodotUi.Manifest;
 
 namespace GodotUi.Generated.Badge;
 
+[Tool]
 public partial class BadgeWidget
 {
     private Label _badgeLabel = null!;
 
     public override string PackageId => "ui.badge";
+    public override ManifestControllerScope ControllerScope => ManifestControllerScope.Package;
 
     protected override ManifestControllerBase CreateController()
     {
@@ -36,6 +38,10 @@ public partial class BadgeWidget
             {
             },
             new ManifestInputBinding[]
+            {
+            },
+            ManifestUiUpdatePolicy.Manual,
+            new ManifestLocalizedPropertyBinding[]
             {
             });
     }

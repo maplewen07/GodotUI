@@ -1,0 +1,138 @@
+name: Release Manifest UI
+
+on:
+  push:
+    tags:
+      - manifest-ui-v*
+
+permissions:
+  contents: read
+
+env:
+  CI: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
+
+jobs:
+  release-gate:
+    name: Release gate (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot 4.7 Mono
+        uses: chickensoft-games/setup-godot@f166999204a4f2722c6fe042fbaa3b3ea0d9c789 # v2.4.1
+        with:
+          version: 4.7.0
+          use-dotnet: true
+          include-templates: false
+
+      - name: Validate tag and release inputs
+        shell: pwsh
+        run: ./scripts/release/Test-ReleaseMetadata.ps1 -Tag '${{ github.ref_name }}' -Release
+
+      - name: Run full verification
+        shell: pwsh
+        run: ./scripts/ci/Invoke-CI.ps1 -GodotBin godot
+
+  publish:
+    name: Package and publish
+    needs: release-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+
+      - name: Build release archives
+        shell: pwsh
+        run: |
+          ./scripts/release/Test-ReleaseMetadata.ps1 -Tag '${{ github.ref_name }}' -Release
+          ./scripts/release/Build-Release.ps1 -RequireExamples
+
+      - name: Verify packaged addon and checksums
+        shell: pwsh
+        run: |
+          $metadata = Get-Content ./manifest-ui-version.json -Raw | ConvertFrom-Json
+          $releaseDir = Join-Path $PWD 'artifacts/release'
+          $expected = @(
+            "manifest-ui-$($metadata.version).zip",
+            "manifest-ui-cli-$($metadata.version).zip",
+            "manifest-ui-example-$($metadata.version).zip",
+            'SHA256SUMS.txt'
+          )
+          $actual = @(Get-ChildItem $releaseDir -File | ForEach-Object Name | Sort-Object)
+          if (Compare-Object ($expected | Sort-Object) $actual) {
+            throw "Release artifact set does not match the contract."
+          }
+          ./scripts/release/Test-AddonPackage.ps1 `
+            -PackagePath (Join-Path $releaseDir "manifest-ui-$($metadata.version).zip") `
+            -SkipGodot
+          ./scripts/release/Test-CliPackage.ps1 `
+            -PackagePath (Join-Path $releaseDir "manifest-ui-cli-$($metadata.version).zip") `
+            -ExpectedVersion $metadata.version
+          Push-Location $releaseDir
+          try {
+            if (Get-Command sha256sum -ErrorAction SilentlyContinue) {
+              sha256sum --check SHA256SUMS.txt
+              if ($LASTEXITCODE -ne 0) { throw 'Checksum verification failed.' }
+            }
+          }
+          finally {
+            Pop-Location
+          }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { throw 'Release packaging changed tracked files.' }
+          $unexpected = @(git status --porcelain --untracked-files=all)
+          if ($LASTEXITCODE -ne 0) { throw 'Could not inspect the release worktree.' }
+          if ($unexpected.Count -gt 0) {
+            $unexpected | ForEach-Object { Write-Host $_ }
+            throw 'Release packaging left or found untracked files.'
+          }
+
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $metadata = Get-Content ./manifest-ui-version.json -Raw | ConvertFrom-Json
+          $arguments = @(
+            'release', 'create', '${{ github.ref_name }}',
+            '--verify-tag',
+            '--title', "Manifest UI $($metadata.version)",
+            '--generate-notes'
+          )
+          if ($metadata.releaseChannel -ne 'stable') {
+            $arguments += '--prerelease'
+          }
+          $artifacts = @(Get-ChildItem ./artifacts/release -File | Sort-Object Name | ForEach-Object FullName)
+          & gh @arguments @artifacts
+          if ($LASTEXITCODE -ne 0) { throw 'GitHub Release creation failed.' }

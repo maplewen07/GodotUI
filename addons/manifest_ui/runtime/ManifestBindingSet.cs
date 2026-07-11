@@ -15,18 +15,24 @@ public sealed class ManifestBindingSet
         IEnumerable<ManifestPropertyBinding> properties,
         ManifestAssetCatalog? assets,
         IEnumerable<ManifestRepeaterBinding>? repeaters = null,
-        IEnumerable<ManifestInputBinding>? inputs = null)
+        IEnumerable<ManifestInputBinding>? inputs = null,
+        ManifestUiUpdatePolicy updatePolicy = ManifestUiUpdatePolicy.Manual,
+        IEnumerable<ManifestLocalizedPropertyBinding>? localizations = null)
     {
         Properties = new List<ManifestPropertyBinding>(properties);
         Assets = assets ?? ManifestAssetCatalog.Empty;
         Repeaters = new List<ManifestRepeaterBinding>(repeaters ?? Array.Empty<ManifestRepeaterBinding>());
         Inputs = new List<ManifestInputBinding>(inputs ?? Array.Empty<ManifestInputBinding>());
+        UpdatePolicy = updatePolicy;
+        Localizations = new List<ManifestLocalizedPropertyBinding>(localizations ?? Array.Empty<ManifestLocalizedPropertyBinding>());
     }
 
     public IReadOnlyList<ManifestPropertyBinding> Properties { get; }
     public ManifestAssetCatalog Assets { get; }
     public IReadOnlyList<ManifestRepeaterBinding> Repeaters { get; }
     public IReadOnlyList<ManifestInputBinding> Inputs { get; }
+    public ManifestUiUpdatePolicy UpdatePolicy { get; }
+    public IReadOnlyList<ManifestLocalizedPropertyBinding> Localizations { get; }
 }
 
 public sealed class ManifestAssetCatalog
@@ -121,18 +127,51 @@ public sealed class ManifestItemBinding
 
 public sealed class ManifestRepeaterBinding
 {
-    public ManifestRepeaterBinding(string targetPath, string templatePath, string fieldId, IEnumerable<ManifestItemBinding> itemBindings)
+    public ManifestRepeaterBinding(
+        string targetPath,
+        string templatePath,
+        string fieldId,
+        IEnumerable<ManifestItemBinding> itemBindings,
+        string keyFieldId = "",
+        int poolCapacity = 32)
     {
         TargetPath = targetPath;
         TemplatePath = templatePath;
         FieldId = fieldId;
         ItemBindings = new List<ManifestItemBinding>(itemBindings);
+        KeyFieldId = keyFieldId;
+        PoolCapacity = Math.Max(0, poolCapacity);
     }
 
     public string TargetPath { get; }
     public string TemplatePath { get; }
     public string FieldId { get; }
     public IReadOnlyList<ManifestItemBinding> ItemBindings { get; }
+    public string KeyFieldId { get; }
+    public int PoolCapacity { get; }
+}
+
+public sealed class ManifestLocalizedPropertyBinding
+{
+    public ManifestLocalizedPropertyBinding(
+        string targetPath,
+        string property,
+        string key,
+        string context = "",
+        IEnumerable<string>? argumentFieldIds = null)
+    {
+        TargetPath = targetPath;
+        Property = property;
+        Key = key;
+        Context = context;
+        ArgumentFieldIds = new List<string>(argumentFieldIds ?? Array.Empty<string>());
+    }
+
+    public string TargetPath { get; }
+    public string Property { get; }
+    public string Key { get; }
+    public string Context { get; }
+    public IReadOnlyList<string> ArgumentFieldIds { get; }
 }
 
 public sealed class ManifestInputBinding

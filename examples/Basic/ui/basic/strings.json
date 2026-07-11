@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "defaultLocale": "en",
+  "locales": ["en", "zh_CN"],
+  "strings": {
+    "basic.title": {
+      "en": "Manifest UI Basic",
+      "zh_CN": "Manifest UI 基础示例"
+    },
+    "basic.hint": {
+      "en": "Edit the name and send a generated UI event.",
+      "zh_CN": "修改名字，然后发送一个生成的 UI 事件。"
+    },
+    "basic.greet": {
+      "en": "Send greeting",
+      "zh_CN": "发送问候"
+    }
+  }
+}

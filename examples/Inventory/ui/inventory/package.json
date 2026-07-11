@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "packageId": "example.inventory",
+  "displayName": "Inventory",
+  "designResolution": [820, 560],
+  "assets": "assets.json",
+  "layout": "layout.json",
+  "bindings": "bindings.json",
+  "codegen": "codegen.json",
+  "validation": "validation.json",
+  "strings": "strings.json",
+  "runtime": {
+    "controllerScope": "instance"
+  },
+  "godot": {
+    "systemName": "inventory",
+    "widgetClass": "InventoryWidget",
+    "controllerClass": "GodotUi.Examples.Inventory.InventoryController",
+    "namespace": "GodotUi.Examples.Inventory.Generated",
+    "outputDir": "generated/ui/inventory",
+    "scenePath": "res://generated/ui/inventory/InventoryWidget.tscn"
+  }
+}

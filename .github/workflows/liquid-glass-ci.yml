@@ -1,0 +1,136 @@
+name: Liquid Glass CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'addons/liquid_glass/**'
+      - 'examples/LiquidGlass/**'
+      - 'tests/LiquidGlass*'
+      - 'tests/Run-LiquidGlassVisual.ps1'
+      - 'scripts/release/LiquidGlass*.ps1'
+      - 'docs/liquid-glass/**'
+      - 'liquid-glass-version.json'
+      - 'global.json'
+      - '.github/workflows/liquid-glass-*.yml'
+  pull_request:
+    paths:
+      - 'addons/liquid_glass/**'
+      - 'examples/LiquidGlass/**'
+      - 'tests/LiquidGlass*'
+      - 'tests/Run-LiquidGlassVisual.ps1'
+      - 'scripts/release/LiquidGlass*.ps1'
+      - 'docs/liquid-glass/**'
+      - 'liquid-glass-version.json'
+      - 'global.json'
+      - '.github/workflows/liquid-glass-*.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: liquid-glass-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
+
+jobs:
+  isolation:
+    name: Isolation and clean install (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot 4.7 Mono
+        uses: chickensoft-games/setup-godot@f166999204a4f2722c6fe042fbaa3b3ea0d9c789 # v2.4.1
+        with:
+          version: 4.7.0
+          use-dotnet: true
+          include-templates: false
+
+      - name: Compile Liquid Glass only
+        shell: pwsh
+        run: dotnet build ./tests/LiquidGlass.Compile.csproj --configuration Release
+
+      - name: Build tracked-only addon archive
+        shell: pwsh
+        run: ./scripts/release/LiquidGlass-Build-Release.ps1 -OutputDirectory artifacts/liquid-glass-ci -SkipExample -Release
+
+      - name: Test ZIP-only compile, import, and runtime
+        shell: pwsh
+        run: |
+          $metadata = Get-Content ./liquid-glass-version.json -Raw | ConvertFrom-Json
+          ./scripts/release/LiquidGlass-Test-AddonPackage.ps1 `
+            -PackagePath "artifacts/liquid-glass-ci/liquid-glass-$($metadata.version).zip" `
+            -GodotBin godot
+
+      - name: Assert tests did not rewrite tracked files
+        shell: pwsh
+        run: |
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { throw 'Liquid Glass CI changed tracked files.' }
+
+  visual:
+    name: Three-resolution visual gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot 4.7 Mono
+        uses: chickensoft-games/setup-godot@f166999204a4f2722c6fe042fbaa3b3ea0d9c789 # v2.4.1
+        with:
+          version: 4.7.0
+          use-dotnet: true
+          include-templates: false
+
+      - name: Install virtual display and Mesa
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri
+
+      - name: Render 640x360, 960x540, and 1440x810
+        shell: bash
+        run: xvfb-run -a pwsh -NoProfile -File ./tests/Run-LiquidGlassVisual.ps1 -GodotBin "$(command -v godot)" -FrameBudgetMilliseconds 75 -ProcessTimeoutSeconds 180
+
+      - name: Assert visual test did not rewrite tracked files
+        shell: pwsh
+        run: |
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { throw 'Liquid Glass visual test changed tracked files.' }
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: liquid-glass-visual-ci-${{ github.run_id }}
+          path: artifacts/test-results/liquid-glass/*.png
+          if-no-files-found: warn

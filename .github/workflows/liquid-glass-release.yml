@@ -1,0 +1,194 @@
+name: Release Liquid Glass
+
+on:
+  push:
+    tags:
+      - liquid-glass-v*
+
+permissions:
+  contents: read
+
+env:
+  CI: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
+
+jobs:
+  release-gate:
+    name: Clean install (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot 4.7 Mono
+        uses: chickensoft-games/setup-godot@f166999204a4f2722c6fe042fbaa3b3ea0d9c789 # v2.4.1
+        with:
+          version: 4.7.0
+          use-dotnet: true
+          include-templates: false
+
+      - name: Validate independent release metadata
+        shell: pwsh
+        run: ./scripts/release/LiquidGlass-Test-ReleaseMetadata.ps1 -Tag '${{ github.ref_name }}' -Release
+
+      - name: Compile Liquid Glass in isolation
+        shell: pwsh
+        run: dotnet build ./tests/LiquidGlass.Compile.csproj --configuration Release
+
+      - name: Build and test addon archive
+        shell: pwsh
+        run: |
+          ./scripts/release/LiquidGlass-Build-Release.ps1 -OutputDirectory artifacts/liquid-glass-gate -SkipExample -Release
+          $metadata = Get-Content ./liquid-glass-version.json -Raw | ConvertFrom-Json
+          ./scripts/release/LiquidGlass-Test-AddonPackage.ps1 `
+            -PackagePath "artifacts/liquid-glass-gate/liquid-glass-$($metadata.version).zip" `
+            -GodotBin godot
+
+  visual-gate:
+    name: Visual gate (Linux OpenGL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot 4.7 Mono
+        uses: chickensoft-games/setup-godot@f166999204a4f2722c6fe042fbaa3b3ea0d9c789 # v2.4.1
+        with:
+          version: 4.7.0
+          use-dotnet: true
+          include-templates: false
+
+      - name: Install virtual display and Mesa
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri
+
+      - name: Render three resolutions
+        shell: bash
+        run: xvfb-run -a pwsh -NoProfile -File ./tests/Run-LiquidGlassVisual.ps1 -GodotBin "$(command -v godot)" -FrameBudgetMilliseconds 75
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: liquid-glass-visual-${{ github.run_id }}
+          path: artifacts/test-results/liquid-glass/*.png
+          if-no-files-found: warn
+
+  publish:
+    name: Package and publish
+    needs:
+      - release-gate
+      - visual-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+
+      - name: Validate tag and build twice
+        shell: pwsh
+        run: |
+          ./scripts/release/LiquidGlass-Test-ReleaseMetadata.ps1 -Tag '${{ github.ref_name }}' -Release
+          ./scripts/release/LiquidGlass-Build-Release.ps1 -OutputDirectory artifacts/release/liquid-glass -Release
+          ./scripts/release/LiquidGlass-Build-Release.ps1 -OutputDirectory artifacts/release/liquid-glass-repeat -Release
+
+      - name: Verify deterministic archives and package contracts
+        shell: pwsh
+        run: |
+          $first = Get-ChildItem ./artifacts/release/liquid-glass -File | Sort-Object Name
+          $second = Get-ChildItem ./artifacts/release/liquid-glass-repeat -File | Sort-Object Name
+          if (Compare-Object $first.Name $second.Name) {
+            throw 'Repeated Liquid Glass builds produced different artifact names.'
+          }
+          foreach ($file in $first) {
+            $repeat = Join-Path './artifacts/release/liquid-glass-repeat' $file.Name
+            $firstHash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash
+            $secondHash = (Get-FileHash -LiteralPath $repeat -Algorithm SHA256).Hash
+            if ($firstHash -ne $secondHash) {
+              throw "Repeated Liquid Glass build changed $($file.Name)."
+            }
+          }
+
+          $metadata = Get-Content ./liquid-glass-version.json -Raw | ConvertFrom-Json
+          $releaseDir = Join-Path $PWD 'artifacts/release/liquid-glass'
+          $expected = @(
+            "liquid-glass-$($metadata.version).zip",
+            "liquid-glass-example-$($metadata.version).zip",
+            'SHA256SUMS.txt'
+          )
+          $actual = @(Get-ChildItem $releaseDir -File | ForEach-Object Name | Sort-Object)
+          if (Compare-Object ($expected | Sort-Object) $actual) {
+            throw 'Liquid Glass release artifact set does not match the contract.'
+          }
+          ./scripts/release/LiquidGlass-Test-AddonPackage.ps1 `
+            -PackagePath (Join-Path $releaseDir "liquid-glass-$($metadata.version).zip") `
+            -SkipGodot
+
+          $checksums = Get-Content (Join-Path $releaseDir 'SHA256SUMS.txt')
+          foreach ($line in $checksums) {
+            if ($line -notmatch '^([0-9a-f]{64})  (.+)$') { throw "Invalid checksum line: $line" }
+            $actualHash = (Get-FileHash -LiteralPath (Join-Path $releaseDir $Matches[2]) -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($actualHash -ne $Matches[1]) { throw "Checksum mismatch for $($Matches[2])." }
+          }
+
+          $exampleRoot = Join-Path $env:RUNNER_TEMP 'liquid-glass-example'
+          Expand-Archive -LiteralPath (Join-Path $releaseDir "liquid-glass-example-$($metadata.version).zip") -DestinationPath $exampleRoot
+          dotnet build (Join-Path $exampleRoot 'LiquidGlassExample.csproj') --configuration Release
+          if ($LASTEXITCODE -ne 0) { throw 'Packaged Liquid Glass example failed to compile.' }
+          dotnet build (Join-Path $exampleRoot 'LiquidGlassExample.csproj') --configuration Debug
+          if ($LASTEXITCODE -ne 0) { throw 'Packaged Liquid Glass example failed its Godot editor configuration compile.' }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { throw 'Liquid Glass packaging changed tracked files.' }
+
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $metadata = Get-Content ./liquid-glass-version.json -Raw | ConvertFrom-Json
+          $arguments = @(
+            'release', 'create', '${{ github.ref_name }}',
+            '--verify-tag',
+            '--title', "Liquid Glass $($metadata.version)",
+            '--generate-notes'
+          )
+          if ($metadata.releaseChannel -ne 'stable') {
+            $arguments += '--prerelease'
+          }
+          $artifacts = @(Get-ChildItem ./artifacts/release/liquid-glass -File | Sort-Object Name | ForEach-Object FullName)
+          & gh @arguments @artifacts
+          if ($LASTEXITCODE -ne 0) { throw 'Liquid Glass GitHub Release creation failed.' }

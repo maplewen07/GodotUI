@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <MSBuildProjectExtensionsPath>$(MSBuildThisFileDirectory)..\..\..\..\.godot\manifest_ui_tool_host\obj\</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+</Project>

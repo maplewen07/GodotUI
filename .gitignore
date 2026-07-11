@@ -1,6 +1,31 @@
-.godot/
-bin/
-obj/
-tools/**/bin/
-tools/**/obj/
+# Godot
+/.godot/
+/.mono/
+*.import
+
+# .NET
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+coverage/
+*.user
+*.suo
 *.tmp
+
+# Editors and operating systems
+/.idea/
+/.vs/
+/.vscode/
+.DS_Store
+Thumbs.db
+
+# Local environment and internal notes
+.env
+.env.*
+!.env.example
+/Me/
+
+# Explicitly excluded third-party source material. Liquid Glass will be a
+# clean-room implementation and must never be copied from this directory.
+/CBLiquidGlass/

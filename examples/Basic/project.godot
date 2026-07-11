@@ -1,0 +1,26 @@
+; Engine configuration file.
+; Use Godot 4.7 Mono for this project.
+
+config_version=5
+
+[application]
+
+config/name="Manifest UI - Basic"
+run/main_scene="res://Main.tscn"
+
+[display]
+
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/size/window_width_override=960
+window/size/window_height_override=540
+window/stretch/mode="canvas_items"
+
+[dotnet]
+
+project/assembly_name="ManifestUiBasicExample"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

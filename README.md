@@ -1,164 +1,91 @@
-# GodotUI Manifest C# V1
+# GodotUI
 
-Minimal Godot 4.6 Mono/C# UI framework based on a manifest-driven flow:
+GodotUI is a Godot 4.7 Mono project for building manifest-driven user
+interfaces in C#. The first distributable addon, **Manifest UI**, combines a
+runtime, deterministic code generation, validation, and editor workflows around
+one versioned UI manifest.
 
-`Model / Service -> Controller -> ViewModelStore -> Widget / Scene`
+Manifest UI is currently a pre-1.0 alpha. Its package and API contracts are
+being hardened for public release; prerelease versions may still change with a
+documented migration path.
 
-## Generate
+[中文说明](docs/README.zh-CN.md) | [Installation](docs/installation.md) |
+[Contributing](CONTRIBUTING.md) | [Changelog](CHANGELOG.md)
+
+## Requirements
+
+- Godot 4.7 Mono. The standard non-Mono editor cannot compile the addon.
+- .NET SDK 8.0.400 or a later .NET 8 patch accepted by `global.json`.
+- PowerShell 7 for repository verification and release packaging.
+
+The repository never stores a machine-specific Godot path. Set `GODOT_BIN` if
+the console executable is not available as `godot` on `PATH`:
 
 ```powershell
-dotnet run --project tools\ManifestUiGen -- validate ui\phone\package.json --write-report
-dotnet run --project tools\ManifestUiGen -- migrate --check ui\phone\package.json
-dotnet run --project tools\ManifestUiGen -- generate ui\phone\package.json
+$env:GODOT_BIN = '<Godot 4.7 Mono console executable>'
 ```
 
-## Verify
+## Install the Addon
+
+Download `manifest-ui-<version>.zip` from a GitHub Release and extract it at the
+root of a Godot project. The resulting path must be:
+
+```text
+addons/manifest_ui/plugin.cfg
+```
+
+Build the C# project, open **Project > Project Settings > Plugins**, and enable
+**Manifest UI**. See [the installation guide](docs/installation.md) for source
+install, upgrade, and uninstall instructions.
+
+## Develop from Source
 
 ```powershell
-dotnet build GodotUI.csproj
-godot --headless --build-solutions --quit
-godot --headless --path . --scene res://tests/SelfCheck.tscn
-godot --headless --path . --scene res://demo/Main.tscn --quit-after 5
+dotnet build GodotUI.csproj --configuration Release
+dotnet run --project tools/ManifestUi.Cli -- --help
+pwsh ./scripts/ci/Invoke-CI.ps1
 ```
 
-Current scope skips visual designer import, localization, complex controls, atlas generation, compression policy, and platform overrides.
+When Godot is not on `PATH`, pass it explicitly:
 
-`package.json` is the canonical entrypoint. It references split manifest files and Godot output settings:
-
-- `assets.json`
-- `layout.json`
-- `bindings.json`
-- `codegen.json`
-- `validation.json`
-- `godot.outputDir`, `godot.widgetClass`, `godot.controllerClass`
-
-Schema snapshots live in `schemas/manifest-ui/` and `ui/<system>/schemas/`; validation is implemented in C#.
-
-For `schemaVersion: 1`, `bindings.json` is canonical-only: generated widget code reads `mvvm.fields`, `bindings`, `controls`, and `events.channels`. Legacy top-level `fields` and array-form `events` fail validation.
-
-## Runtime Lifecycle
-
-```csharp
-ManifestUiManager.Instance?.Open("phone", "res://generated/ui/phone/PhoneWidget.tscn");
-
-ManifestUiManager.Instance?.Open("phone", "res://generated/ui/phone/PhoneWidget.tscn", new ManifestUiOpenOptions
-{
-    Mode = ManifestUiOpenMode.Replace,
-    LayerId = "Modal",
-    IsModal = true,
-    GrabFocus = true,
-    RestoreFocusOnClose = true,
-});
-
-ManifestUiManager.Instance?.Close("phone");
+```powershell
+pwsh ./scripts/ci/Invoke-CI.ps1 -GodotBin $env:GODOT_BIN
 ```
 
-`ManifestUiManager` owns controllers by package id. Widgets attach/detach on tree enter/exit, controllers own the shared `ViewModelStore`, and message bus subscriptions can be disposed or stored by controllers for teardown.
+The CLI and editor plugin consume the same tooling core. Generated `.g.cs`,
+`.tscn`, and `.tres` files are managed output; handwritten partial widget files
+remain user-owned.
 
-## Plugin And Bindings
+## Repository Layout
 
-Enable `addons/manifest_ui/plugin.cfg` in Godot to install the Manifest UI autoloads and open the Manifest UI dock. The dock scans `ui/*/package.json`, lets you pick a package, and runs the existing C# generator for `Validate`, `Validate Report`, and `Generate`.
-
-The dock shows a status line, parsed diagnostics, and raw generator output. Diagnostics are parsed from `ERROR:` and `WARN:` CLI lines; selecting one navigates the FileSystem dock to the manifest file and shows the logical manifest path in the status line. `Validate Report` writes `ui/<system>/export/manifest_report.md`, and `Open Report` selects it when present. `Generate` refreshes Godot's editor filesystem after a successful run.
-
-`Import Assets` refreshes Godot's editor filesystem and reimports the selected package's `ui/<system>/assets/` files. If the package has no assets directory or no importable files, the dock reports that explicitly.
-
-Bindings are applied by the runtime plugin, not by per-widget generated setters:
-
-```json
-{
-  "Panel/Content/TitleLabel.text": "viewmodel:title",
-  "Panel/Content/CountLabel.text": {
-    "source": "viewmodel:contactCount",
-    "converter": "number",
-    "format": "Contacts opened {0} time(s)"
-  }
-}
+```text
+addons/manifest_ui/       distributable Manifest UI addon
+tools/ManifestUi.Cli/     .NET 8 command-line frontend
+tests/                    tooling and Godot headless tests
+examples/                 examples excluded from the addon archive
+docs/                     user and maintainer documentation
+scripts/                  CI and release verification
 ```
 
-Supported properties are `text`, `visible`/`visibility`, `enabled`, `value`, `texture`, and `themeClass`.
+Only `addons/manifest_ui/` is included in the addon archive. It must not depend
+on source files elsewhere in the repository.
 
-```csharp
-ManifestBindingConverters.Register("upper", value => value?.ToString()?.ToUpperInvariant() ?? "");
-```
+## Release Model
 
-## Complex UI
+Manifest UI uses semantic versions and `manifest-ui-vX.Y.Z` tags. Releases move
+through alpha, beta, and release-candidate gates before 1.0. The release
+workflow produces the addon, portable .NET CLI, examples, and SHA-256 checksums.
 
-V1 supports the small set needed for real screens without adding a full UI router:
+Liquid Glass now has an independent clean-room alpha implementation under
+`addons/liquid_glass/`, with its own version metadata, `liquid-glass-vX.Y.Z`
+tags, release workflow, archive, examples, and checksums. The roadmap still
+keeps its stable 1.0 release after Manifest UI 1.0; the current alpha is for
+behavior, renderer, accessibility, and performance validation. No third-party
+Unreal Engine source, binaries, assets, or history are included in the public
+repository or release archives.
 
-- `repeaters[]` rebuilds a list from a collection field using a hidden template child.
-- `inputs[]` writes common input signals back into `ViewModelStore` and calls `ManifestControllerBase.OnInputChanged`.
-- `SceneInstance` layout nodes instance an existing `.tscn`; generated child widgets attach to their own manager-owned controller.
-- `controls[].events[]` supports `pressed`, `text_changed`, `toggled`, `value_changed`, `item_selected`, and `tab_changed`.
+## License
 
-```json
-{
-  "repeaters": [
-    {
-      "id": "contactsRepeater",
-      "target": "Panel/Content/Tabs/ContactsTab/ContactsList",
-      "template": "Panel/Content/Tabs/ContactsTab/ContactsList/ContactItemTemplate",
-      "source": "viewmodel:contacts",
-      "bindings": {
-        "NameLabel.text": "item:name",
-        "PhoneLabel.text": "item:phone"
-      }
-    }
-  ],
-  "inputs": [
-    {
-      "id": "searchInput",
-      "target": "Panel/Content/SearchInput",
-      "property": "text",
-      "source": "viewmodel:searchText"
-    }
-  ]
-}
-```
-
-Repeaters intentionally use full rebuild, not keyed diff or virtualization. Add that only when list size makes it measurable.
-
-## Assets
-
-`assets.json` declares package-local resources. Source assets must stay under `ui/<system>/assets/`; generated metadata maps each id to a stable `res://ui/<system>/assets/...` path. The generator validates path containment, `sha256:` hashes, file existence, and kind/extension compatibility.
-
-Supported asset kinds are `texture`, `font`, and `theme`:
-
-```json
-{
-  "assets": [
-    {
-      "id": "phone_icon",
-      "relativePath": "assets/phone_icon.tres",
-      "kind": "texture",
-      "contentHash": "sha256:..."
-    },
-    {
-      "id": "phone_font",
-      "relativePath": "assets/phone_font.tres",
-      "kind": "font",
-      "contentHash": "sha256:...",
-      "defaultFont": true,
-      "defaultFontSize": 14
-    },
-    {
-      "id": "phone_theme",
-      "relativePath": "assets/phone_theme.json",
-      "kind": "theme",
-      "contentHash": "sha256:...",
-      "theme": {
-        "outputPath": "generated/ui/phone/assets/PhoneTheme.tres",
-        "defaultFontAssetId": "phone_font",
-        "defaultFontSize": 14,
-        "typeVariations": [
-          { "id": "PhonePanel", "baseType": "Panel" }
-        ]
-      }
-    }
-  ]
-}
-```
-
-Generation does not copy source assets. It only writes derived theme resources such as `generated/ui/phone/assets/PhoneTheme.tres`. Generated widgets include a `ManifestAssetCatalog`; texture bindings can use an asset id fallback, and widgets apply the generated theme automatically.
-
-`validate --write-report` emits `ui/<system>/export/manifest_report.md` and `godot_import_manifest.json`, including asset ids, kinds, source paths, `res://` paths, hashes, and theme outputs.
+GodotUI is available under the [MIT License](LICENSE). See
+[Third-Party Notices](THIRD_PARTY_NOTICES.md) for external runtime and tooling
+dependencies.

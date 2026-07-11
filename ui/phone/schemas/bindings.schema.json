@@ -10,7 +10,7 @@
       "required": ["fields"],
       "additionalProperties": true,
       "properties": {
-        "updatePolicy": { "type": "string" },
+        "updatePolicy": { "enum": ["manual", "immediate", "deferred"] },
         "fields": {
           "type": "array",
           "items": {
@@ -21,7 +21,8 @@
               "id": { "type": "string" },
               "path": { "type": "string" },
               "value": { "enum": ["text", "bool", "number", "assetRef", "object"] },
-              "collection": { "type": "string" }
+              "collection": { "type": "string" },
+              "controllerOnlySideEffect": { "const": false }
             }
           }
         }
@@ -31,10 +32,7 @@
       "type": "object",
       "additionalProperties": {
         "oneOf": [
-          {
-            "type": "string",
-            "pattern": "^viewmodel:.+"
-          },
+          { "type": "string", "pattern": "^viewmodel:.+" },
           {
             "type": "object",
             "required": ["source"],
@@ -60,6 +58,8 @@
           "target": { "type": "string" },
           "template": { "type": "string" },
           "source": { "type": "string", "pattern": "^viewmodel:.+" },
+          "keyFieldId": { "type": "string" },
+          "poolCapacity": { "type": "integer", "minimum": 0 },
           "bindings": {
             "type": "object",
             "additionalProperties": {
@@ -132,12 +132,12 @@
           "items": {
             "type": "object",
             "required": ["id", "scope", "dispatch"],
-            "additionalProperties": true,
+            "additionalProperties": false,
             "properties": {
-              "id": { "type": "string" },
-              "scope": { "type": "string" },
-              "dispatch": { "type": "string" },
-              "payload": { "type": "array" }
+              "id": { "type": "string", "minLength": 1 },
+              "scope": { "type": "string", "minLength": 1 },
+              "dispatch": { "enum": ["immediate", "deferred"] },
+              "payload": { "type": "array", "maxItems": 0 }
             }
           }
         }

@@ -1,0 +1,113 @@
+{
+  "mvvm": {
+    "updatePolicy": "deferred",
+    "fields": [
+      {
+        "id": "filter",
+        "path": "UI.Inventory.Filter",
+        "value": "text",
+        "collection": "none"
+      },
+      {
+        "id": "summary",
+        "path": "UI.Inventory.Summary",
+        "value": "text",
+        "collection": "none"
+      },
+      {
+        "id": "usedCapacity",
+        "path": "UI.Inventory.UsedCapacity",
+        "value": "number",
+        "collection": "none"
+      },
+      {
+        "id": "hasItems",
+        "path": "UI.Inventory.HasItems",
+        "value": "bool",
+        "collection": "none"
+      },
+      {
+        "id": "items",
+        "path": "UI.Inventory.Items",
+        "value": "object",
+        "collection": "list"
+      }
+    ]
+  },
+  "bindings": {
+    "Card/Content/Toolbar/FilterInput.text": {
+      "source": "viewmodel:filter",
+      "fallback": ""
+    },
+    "Card/Content/SummaryLabel.text": {
+      "source": "viewmodel:summary",
+      "fallback": "Loading inventory..."
+    },
+    "Card/Content/CapacityBar.value": {
+      "source": "viewmodel:usedCapacity",
+      "converter": "number",
+      "fallback": 0
+    },
+    "Card/Content/EmptyState.visible": {
+      "source": "viewmodel:hasItems",
+      "converter": "not",
+      "fallback": false
+    },
+    "Card/Content/Scroll.visible": {
+      "source": "viewmodel:hasItems",
+      "fallback": false
+    }
+  },
+  "repeaters": [
+    {
+      "id": "inventoryRows",
+      "target": "Card/Content/Scroll/Rows",
+      "template": "Card/Content/Scroll/Rows/RowTemplate",
+      "source": "viewmodel:items",
+      "keyFieldId": "sku",
+      "poolCapacity": 16,
+      "bindings": {
+        "SkuLabel.text": "item:sku",
+        "NameLabel.text": "item:name",
+        "QuantityLabel.text": {
+          "source": "item:quantity",
+          "converter": "number",
+          "format": "x{0}",
+          "fallback": 0
+        }
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "filterInput",
+      "target": "Card/Content/Toolbar/FilterInput",
+      "property": "text",
+      "source": "viewmodel:filter"
+    }
+  ],
+  "controls": [
+    {
+      "id": "RefreshButton",
+      "target": "Card/Content/Toolbar/RefreshButton",
+      "widgetClass": "Button",
+      "events": [
+        {
+          "event": "pressed",
+          "handler": "refresh_inventory",
+          "channel": "inventory.refresh"
+        }
+      ]
+    }
+  ],
+  "events": {
+    "channels": [
+      {
+        "id": "inventory.refresh",
+        "scope": "inventory",
+        "dispatch": "immediate",
+        "payload": []
+      }
+    ]
+  }
+}

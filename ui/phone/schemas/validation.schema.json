@@ -3,8 +3,13 @@
   "$id": "godot.manifest-ui.validation.schema.json",
   "type": "object",
   "required": ["commandletInputWhitelist"],
+  "additionalProperties": false,
   "properties": {
     "commandletInputWhitelist": { "type": "array", "items": { "type": "string" } },
-    "checks": { "type": "object" }
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "manifestValidation": { "const": true } }
+    }
   }
 }

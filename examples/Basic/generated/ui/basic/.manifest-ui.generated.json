@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "toolVersion": "0.1.0-alpha.1",
+  "packageId": "example.basic",
+  "inputHash": "sha256:b86d61778eae56ab9d60a8b5e622045f618f4b972fce82e68c189856bb9dce59",
+  "inputs": [
+    {
+      "path": "ui/basic/assets.json",
+      "contentHash": "sha256:3ff5f36c9d4b232659ddd88f4d22f3f01d313884e5a22190bda7a07a235333fa"
+    },
+    {
+      "path": "ui/basic/bindings.json",
+      "contentHash": "sha256:6b89a02091dad2633ac797347db9c41d44ffbb60287911a090d3db19c4fdaadc"
+    },
+    {
+      "path": "ui/basic/codegen.json",
+      "contentHash": "sha256:5fc511c4aba5463ebf574d8e8527974a8a11357f996d45bea0a9d885777e3dcf"
+    },
+    {
+      "path": "ui/basic/layout.json",
+      "contentHash": "sha256:11cd6d501d00cd0b9fd71d41e5da6e053dd49ba452a60da6a8d0d398e9edb89c"
+    },
+    {
+      "path": "ui/basic/package.json",
+      "contentHash": "sha256:20d599b1f9bf19715ca4acafe9779c8a20b681bb3feb7a49cc19bdc349410085"
+    },
+    {
+      "path": "ui/basic/strings.json",
+      "contentHash": "sha256:8fdcbed85f58c489399d652e820a77d850e15f65d68187108e76a9c2bc4600b2"
+    },
+    {
+      "path": "ui/basic/validation.json",
+      "contentHash": "sha256:9682b20817ddf9b7b199789e925a6a9309c397251bb44996e38d2f9b08132b0e"
+    }
+  ],
+  "managedFiles": [
+    {
+      "path": "BasicWidget.Catalog.g.cs",
+      "kind": "catalog",
+      "contentHash": "sha256:099a39fa2216836de5754a9744d945ce1c699b242266c0996a0c1fd07d617829"
+    },
+    {
+      "path": "BasicWidget.g.cs",
+      "kind": "code",
+      "contentHash": "sha256:2c1515615ebf6ddc73225fe80fe1ca933ddae426b10aaef0415c437a4e7b9151"
+    },
+    {
+      "path": "BasicWidget.tscn",
+      "kind": "scene",
+      "contentHash": "sha256:3981ff15f499667288549829cd4320094128e25de8c042244c2644216aa8693d"
+    },
+    {
+      "path": "translations/basic.en.tres",
+      "kind": "translation",
+      "contentHash": "sha256:fcca3445e9fc3744b3599054ace9094df16e71a765e5da8033619c26b08dd6ed"
+    },
+    {
+      "path": "translations/basic.zh_CN.tres",
+      "kind": "translation",
+      "contentHash": "sha256:b74ecdee407c5cea602a2dd2cf117634c44e30665a55894cf3967e7c25a0effa"
+    }
+  ]
+}

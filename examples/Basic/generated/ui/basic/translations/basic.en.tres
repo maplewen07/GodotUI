@@ -1,0 +1,6 @@
+[gd_resource type="Translation" format=3]
+
+[resource]
+resource_name = "example.basic.en"
+locale = "en"
+messages = {&"basic.greet": "Send greeting", &"basic.hint": "Edit the name and send a generated UI event.", &"basic.title": "Manifest UI Basic"}

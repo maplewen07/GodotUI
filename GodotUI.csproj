@@ -1,13 +1,15 @@
-<Project Sdk="Godot.NET.Sdk/4.6.2">
+<Project Sdk="Godot.NET.Sdk/4.7.0">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <Nullable>enable</Nullable>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="CBLiquidGlass\**\*.cs" />
+    <Compile Remove="artifacts\**\*.cs" />
     <Compile Remove="tools\**\*.cs" />
     <Compile Remove="tools\**\obj\**\*.cs" />
+    <Compile Remove="tests\ManifestUi.Tooling.Tests\**\*.cs" />
   </ItemGroup>
 </Project>

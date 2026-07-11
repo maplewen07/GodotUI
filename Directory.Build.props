@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <ManifestUiVersion>0.1.0-alpha.1</ManifestUiVersion>
+    <Version Condition="'$(Version)' == ''">$(ManifestUiVersion)</Version>
+    <Authors>maplewen</Authors>
+    <Company>maplewen</Company>
+    <Copyright>Copyright (c) maplewen</Copyright>
+    <RepositoryUrl>https://github.com/maplewen07/GodotUI</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>

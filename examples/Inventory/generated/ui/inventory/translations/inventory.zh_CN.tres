@@ -1,0 +1,6 @@
+[gd_resource type="Translation" format=3]
+
+[resource]
+resource_name = "example.inventory.zh_CN"
+locale = "zh_CN"
+messages = {&"inventory.empty": "没有符合筛选条件的物品。", &"inventory.refresh": "刷新", &"inventory.title": "服务驱动的物品栏"}

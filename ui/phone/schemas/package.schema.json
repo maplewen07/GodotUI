@@ -3,16 +3,35 @@
   "$id": "godot.manifest-ui.package.schema.json",
   "type": "object",
   "required": ["schemaVersion", "packageId", "displayName", "designResolution", "assets", "layout", "bindings", "codegen", "validation", "godot"],
+  "additionalProperties": false,
   "properties": {
     "schemaVersion": { "const": 1 },
-    "packageId": { "type": "string" },
-    "displayName": { "type": "string" },
-    "designResolution": { "type": "array", "minItems": 2, "maxItems": 2 },
-    "assets": { "type": "string" },
-    "layout": { "type": "string" },
-    "bindings": { "type": "string" },
-    "codegen": { "type": "string" },
-    "validation": { "type": "string" },
-    "godot": { "type": "object" }
+    "packageId": { "type": "string", "minLength": 1 },
+    "displayName": { "type": "string", "minLength": 1 },
+    "designResolution": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2 },
+    "assets": { "type": "string", "minLength": 1 },
+    "layout": { "type": "string", "minLength": 1 },
+    "bindings": { "type": "string", "minLength": 1 },
+    "codegen": { "type": "string", "minLength": 1 },
+    "validation": { "type": "string", "minLength": 1 },
+    "strings": { "type": "string", "minLength": 1 },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "controllerScope": { "enum": ["instance", "screen", "package"] } }
+    },
+    "godot": {
+      "type": "object",
+      "required": ["widgetClass", "controllerClass", "scenePath"],
+      "additionalProperties": false,
+      "properties": {
+        "systemName": { "type": "string" },
+        "widgetClass": { "type": "string", "minLength": 1 },
+        "controllerClass": { "type": "string", "minLength": 1 },
+        "namespace": { "type": "string" },
+        "outputDir": { "type": "string" },
+        "scenePath": { "type": "string", "pattern": "^res://.+\\.tscn$" }
+      }
+    }
   }
 }

@@ -1,0 +1,6 @@
+{
+  "exitCode": 1,
+  "diagnostics": [
+    { "code": "MUI2201", "file": "bindings.json", "jsonPointer": "/bindings/PlainButton/value" }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "defaultLocale": "en",
+  "locales": ["en", "zh_CN"],
+  "strings": {
+    "inventory.title": {
+      "en": "Service-backed inventory",
+      "zh_CN": "服务驱动的物品栏"
+    },
+    "inventory.refresh": {
+      "en": "Refresh",
+      "zh_CN": "刷新"
+    },
+    "inventory.empty": {
+      "en": "No inventory items match the filter.",
+      "zh_CN": "没有符合筛选条件的物品。"
+    }
+  }
+}

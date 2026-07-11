@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "packageId": "example.basic",
+  "displayName": "Basic",
+  "designResolution": [640, 360],
+  "assets": "assets.json",
+  "layout": "layout.json",
+  "bindings": "bindings.json",
+  "codegen": "codegen.json",
+  "validation": "validation.json",
+  "strings": "strings.json",
+  "runtime": {
+    "controllerScope": "instance"
+  },
+  "godot": {
+    "systemName": "basic",
+    "widgetClass": "BasicWidget",
+    "controllerClass": "GodotUi.Examples.Basic.BasicController",
+    "namespace": "GodotUi.Examples.Basic.Generated",
+    "outputDir": "generated/ui/basic",
+    "scenePath": "res://generated/ui/basic/BasicWidget.tscn"
+  }
+}

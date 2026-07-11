@@ -9,11 +9,11 @@
   "codegen": "codegen.json",
   "validation": "validation.json",
   "godot": {
-    "systemName": "badge",
-    "widgetClass": "BadgeWidget",
-    "controllerClass": "GodotUi.Sample.Badge.BadgeController",
-    "namespace": "GodotUi.Generated.Badge",
-    "outputDir": "generated/ui/badge",
-    "scenePath": "res://generated/ui/badge/BadgeWidget.tscn"
+	"systemName": "badge",
+	"widgetClass": "BadgeWidget",
+	"controllerClass": "GodotUi.Sample.Badge.BadgeController",
+	"namespace": "GodotUi.Generated.Badge",
+	"outputDir": "generated/ui/badge",
+	"scenePath": "res://generated/ui/badge/BadgeWidget.tscn"
   }
 }
