@@ -1,0 +1,24 @@
+{
+  "root": {
+    "id": "Root",
+    "type": "Control",
+    "name": "Root",
+    "children": [
+      {
+        "id": "List",
+        "type": "VBoxContainer",
+        "name": "List",
+        "children": [
+          {
+            "id": "Item",
+            "type": "HBoxContainer",
+            "name": "Item",
+            "children": [
+              { "id": "Name", "type": "Label", "name": "Name" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

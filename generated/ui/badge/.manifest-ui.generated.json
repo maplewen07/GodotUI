@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "toolVersion": "0.1.0-alpha.1",
+  "packageId": "ui.badge",
+  "inputHash": "sha256:222630c41f017beb054d33978737357cc0db43f9d9625783e6e0dc8185ec47a4",
+  "inputs": [
+    {
+      "path": "ui/badge/assets.json",
+      "contentHash": "sha256:fe5b616a3f661bc0683333532802fb30aede922e3dc8bcaba6e21f9e41d0c4ca"
+    },
+    {
+      "path": "ui/badge/bindings.json",
+      "contentHash": "sha256:33e23ccfe6821e7ebf4ce2a5dd7bdbc0563d337bf440eee290c34638c07266ec"
+    },
+    {
+      "path": "ui/badge/codegen.json",
+      "contentHash": "sha256:94bcb82bc46bf7f80c8c6a0685b95246c6e39378b33f1198e591838838a2774d"
+    },
+    {
+      "path": "ui/badge/layout.json",
+      "contentHash": "sha256:4cd7c4e43cd498ad092de46dce33cbb5dea031b7418f051c141c68a999eb65cf"
+    },
+    {
+      "path": "ui/badge/package.json",
+      "contentHash": "sha256:2f0b56891033f42bbc1da6484862a23bcb1688fdaf915985d16bc932ec9f7413"
+    },
+    {
+      "path": "ui/badge/validation.json",
+      "contentHash": "sha256:7234ee0dccb4624a8bdefbf2b6cb72235ae43efe2057fd8ec3e9fca5fc0998a2"
+    }
+  ],
+  "managedFiles": [
+    {
+      "path": "BadgeWidget.Catalog.g.cs",
+      "kind": "catalog",
+      "contentHash": "sha256:8113a56ffe42b4bfa4cf480fddc6599e649024b80a8b54eb7af990ea3ce3b9a7"
+    },
+    {
+      "path": "BadgeWidget.g.cs",
+      "kind": "code",
+      "contentHash": "sha256:c96a9a7feabd24b31d9dee0f11c75eb9bad9b3db00d582a71e1131cf2eb0da5d"
+    },
+    {
+      "path": "BadgeWidget.tscn",
+      "kind": "scene",
+      "contentHash": "sha256:f931a297f38b627814b14f541cee20844acbe92bbd813e2f1ba29756630bb4c3"
+    }
+  ]
+}

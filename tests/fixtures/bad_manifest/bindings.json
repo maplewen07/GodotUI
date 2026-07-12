@@ -1,0 +1,32 @@
+{
+  "mvvm": {
+    "updatePolicy": "manual",
+    "fields": [
+      {
+        "id": "missing",
+        "path": "UI.Bad.Missing",
+        "value": "text"
+      }
+    ]
+  },
+  "bindings": {
+    "MissingLabel.text": "viewmodel:missing"
+  },
+  "controls": [
+    {
+      "id": "BadButton",
+      "target": "BadButton",
+      "widgetClass": "Button",
+      "events": [
+        {
+          "event": "pressed",
+          "handler": "bad_click",
+          "channel": "bad.missing"
+        }
+      ]
+    }
+  ],
+  "events": {
+    "channels": []
+  }
+}

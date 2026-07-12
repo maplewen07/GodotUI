@@ -1,0 +1,15 @@
+{
+  "root": {
+    "id": "BadConverterWidget",
+    "type": "Control",
+    "name": "BadConverterWidget",
+    "children": [
+      {
+        "id": "TitleLabel",
+        "type": "Label",
+        "name": "TitleLabel",
+        "properties": { "text": "" }
+      }
+    ]
+  }
+}

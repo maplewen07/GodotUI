@@ -1,0 +1,10 @@
+{
+  "root": {
+    "id": "Root",
+    "type": "Control",
+    "name": "Root",
+    "children": [
+      { "id": "List", "type": "VBoxContainer", "name": "List" }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://generated/ui/badge/BadgeWidget.cs" id="1_widget"]
+
+[node name="BadgeWidget" type="Control"]
+script = ExtResource("1_widget")
+custom_minimum_size = Vector2(180, 24)
+
+[node name="BadgeLabel" type="Label" parent="."]
+text = ""

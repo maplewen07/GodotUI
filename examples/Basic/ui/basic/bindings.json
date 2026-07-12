@@ -1,0 +1,74 @@
+{
+  "mvvm": {
+    "updatePolicy": "immediate",
+    "fields": [
+      {
+        "id": "name",
+        "path": "UI.Basic.Name",
+        "value": "text",
+        "collection": "none"
+      },
+      {
+        "id": "greeting",
+        "path": "UI.Basic.Greeting",
+        "value": "text",
+        "collection": "none"
+      },
+      {
+        "id": "clickCount",
+        "path": "UI.Basic.ClickCount",
+        "value": "number",
+        "collection": "none"
+      }
+    ]
+  },
+  "bindings": {
+    "Card/Content/NameInput.text": {
+      "source": "viewmodel:name",
+      "fallback": "Maple"
+    },
+    "Card/Content/GreetingLabel.text": {
+      "source": "viewmodel:greeting",
+      "fallback": "Ready to greet someone."
+    },
+    "Card/Content/CountLabel.text": {
+      "source": "viewmodel:clickCount",
+      "converter": "number",
+      "format": "Greetings sent: {0}",
+      "fallback": 0
+    }
+  },
+  "repeaters": [],
+  "inputs": [
+    {
+      "id": "nameInput",
+      "target": "Card/Content/NameInput",
+      "property": "text",
+      "source": "viewmodel:name"
+    }
+  ],
+  "controls": [
+    {
+      "id": "GreetButton",
+      "target": "Card/Content/GreetButton",
+      "widgetClass": "Button",
+      "events": [
+        {
+          "event": "pressed",
+          "handler": "say_hello",
+          "channel": "basic.say_hello"
+        }
+      ]
+    }
+  ],
+  "events": {
+    "channels": [
+      {
+        "id": "basic.say_hello",
+        "scope": "basic",
+        "dispatch": "immediate",
+        "payload": []
+      }
+    ]
+  }
+}

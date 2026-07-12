@@ -1,0 +1,15 @@
+{
+  "mvvm": {
+    "fields": [
+      { "id": "icon", "path": "UI.Bad.Icon", "value": "assetRef" }
+    ]
+  },
+  "bindings": {
+    "IconTexture.texture": {
+      "source": "viewmodel:icon",
+      "fallback": "missing_icon"
+    }
+  },
+  "controls": [],
+  "events": { "channels": [] }
+}

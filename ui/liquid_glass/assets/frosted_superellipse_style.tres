@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="LiquidGlassStyle" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/liquid_glass/runtime/LiquidGlassStyle.cs" id="1_style"]
+
+[resource]
+script = ExtResource("1_style")
+Shape = 3
+CornerRadius = 28.0
+SuperellipseExponent = 4.6
+EdgeSoftness = 1.25
+BlurLod = 4.6
+Refraction = 1.8
+Dispersion = 0.3
+Tint = Color(0.843137, 0.964706, 1, 1)
+TintStrength = 0.28
+Saturation = 0.88
+RimStrength = 0.52
+InnerShadow = 0.22
+NoiseStrength = 0.018

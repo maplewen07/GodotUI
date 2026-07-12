@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "generator": "ManifestUi",
+  "requiredServices": [
+    {
+      "type": "GodotUi.Examples.Inventory.IInventoryService",
+      "property": "InventoryService",
+      "key": "demo"
+    }
+  ],
+  "routes": []
+}

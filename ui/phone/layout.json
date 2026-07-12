@@ -1,0 +1,183 @@
+{
+  "root": {
+    "id": "PhoneWidget",
+    "type": "Control",
+    "name": "PhoneWidget",
+    "properties": {
+      "anchors_preset": 15,
+      "anchor_right": 1.0,
+      "anchor_bottom": 1.0,
+      "grow_horizontal": 2,
+      "grow_vertical": 2
+    },
+    "children": [
+      {
+        "id": "Panel",
+        "type": "Panel",
+        "name": "Panel",
+        "properties": {
+          "anchors_preset": 8,
+          "anchor_left": 0.5,
+          "anchor_top": 0.5,
+          "anchor_right": 0.5,
+          "anchor_bottom": 0.5,
+          "offset_left": -220.0,
+          "offset_top": -210.0,
+          "offset_right": 220.0,
+          "offset_bottom": 210.0
+        },
+        "children": [
+          {
+            "id": "Content",
+            "type": "VBoxContainer",
+            "name": "Content",
+            "properties": {
+              "anchors_preset": 15,
+              "anchor_right": 1.0,
+              "anchor_bottom": 1.0,
+              "offset_left": 24.0,
+              "offset_top": 18.0,
+              "offset_right": -24.0,
+              "offset_bottom": -18.0
+            },
+            "children": [
+              {
+                "id": "IconTexture",
+                "type": "TextureRect",
+                "name": "IconTexture",
+                "properties": {
+                  "custom_minimum_size": [32, 32]
+                }
+              },
+              {
+                "id": "TitleLabel",
+                "type": "Label",
+                "name": "TitleLabel",
+                "properties": {
+                  "text": ""
+                }
+              },
+              {
+                "id": "StatusLabel",
+                "type": "Label",
+                "name": "StatusLabel",
+                "properties": {
+                  "text": ""
+                }
+              },
+              {
+                "id": "SearchInput",
+                "type": "LineEdit",
+                "name": "SearchInput",
+                "properties": {
+                  "placeholder_text": "Search"
+                }
+              },
+              {
+                "id": "CountLabel",
+                "type": "Label",
+                "name": "CountLabel",
+                "properties": {
+                  "text": ""
+                }
+              },
+              {
+                "id": "BatteryBar",
+                "type": "ProgressBar",
+                "name": "BatteryBar",
+                "properties": {
+                  "max_value": 10.0,
+                  "value": 0.0
+                }
+              },
+              {
+                "id": "DetailsLabel",
+                "type": "Label",
+                "name": "DetailsLabel",
+                "properties": {
+                  "text": "Details"
+                }
+              },
+              {
+                "id": "Tabs",
+                "type": "TabContainer",
+                "name": "Tabs",
+                "properties": {
+                  "custom_minimum_size": [320, 130]
+                },
+                "children": [
+                  {
+                    "id": "ContactsTab",
+                    "type": "Control",
+                    "name": "ContactsTab",
+                    "children": [
+                      {
+                        "id": "ContactsList",
+                        "type": "VBoxContainer",
+                        "name": "ContactsList",
+                        "children": [
+                          {
+                            "id": "ContactItemTemplate",
+                            "type": "HBoxContainer",
+                            "name": "ContactItemTemplate",
+                            "children": [
+                              {
+                                "id": "NameLabel",
+                                "type": "Label",
+                                "name": "NameLabel",
+                                "properties": {
+                                  "text": ""
+                                }
+                              },
+                              {
+                                "id": "PhoneLabel",
+                                "type": "Label",
+                                "name": "PhoneLabel",
+                                "properties": {
+                                  "text": ""
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "InfoTab",
+                    "type": "Control",
+                    "name": "InfoTab",
+                    "children": [
+                      {
+                        "id": "InfoLabel",
+                        "type": "Label",
+                        "name": "InfoLabel",
+                        "properties": {
+                          "text": "Info"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "BadgeHost",
+                "type": "SceneInstance",
+                "name": "BadgeHost",
+                "scenePath": "res://generated/ui/badge/BadgeWidget.tscn"
+              },
+              {
+                "id": "ContactsButton",
+                "type": "Button",
+                "name": "ContactsButton",
+                "properties": {
+                  "text": "Open Contacts"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

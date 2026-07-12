@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "godot.manifest-ui.validation.schema.json",
+  "type": "object",
+  "required": ["commandletInputWhitelist"],
+  "additionalProperties": false,
+  "properties": {
+    "commandletInputWhitelist": { "type": "array", "items": { "type": "string" } },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "manifestValidation": { "const": true } }
+    }
+  }
+}

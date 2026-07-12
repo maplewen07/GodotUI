@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "packageId": "ui.legacy_fields",
+  "displayName": "Legacy Fields",
+  "designResolution": [1280, 720],
+  "assets": "assets.json",
+  "layout": "layout.json",
+  "bindings": "bindings.json",
+  "codegen": "codegen.json",
+  "validation": "validation.json",
+  "godot": {
+    "systemName": "legacy_fields",
+    "widgetClass": "LegacyFieldsWidget",
+    "controllerClass": "GodotUi.Sample.LegacyFields.LegacyFieldsController",
+    "namespace": "GodotUi.Generated.LegacyFields",
+    "outputDir": "generated/ui/legacy_fields",
+    "scenePath": "res://generated/ui/legacy_fields/LegacyFieldsWidget.tscn"
+  }
+}

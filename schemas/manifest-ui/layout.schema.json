@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "godot.manifest-ui.layout.schema.json",
+  "type": "object",
+  "required": ["root"],
+  "additionalProperties": false,
+  "properties": { "root": { "$ref": "#/$defs/node" } },
+  "$defs": {
+    "assetRef": {
+      "type": "object",
+      "required": ["assetRef"],
+      "additionalProperties": false,
+      "properties": { "assetRef": { "type": "string", "minLength": 1 } }
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "type", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "scenePath": { "type": "string" },
+        "scriptPath": { "type": "string", "pattern": "^res://.+\\.(cs|gd)$" },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "number" },
+              { "type": "boolean" },
+              { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+              { "$ref": "#/$defs/assetRef" }
+            ]
+          }
+        },
+        "localization": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string", "minLength": 1 },
+              {
+                "type": "object",
+                "required": ["key"],
+                "additionalProperties": false,
+                "properties": {
+                  "key": { "type": "string", "minLength": 1 },
+                  "context": { "type": "string" },
+                  "arguments": {
+                    "type": "array",
+                    "items": { "type": "string", "minLength": 1 }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/node" } }
+      }
+    }
+  }
+}

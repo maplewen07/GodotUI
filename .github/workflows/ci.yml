@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
+
+jobs:
+  verify:
+    name: Verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot 4.7 Mono
+        uses: chickensoft-games/setup-godot@f166999204a4f2722c6fe042fbaa3b3ea0d9c789 # v2.4.1
+        with:
+          version: 4.7.0
+          use-dotnet: true
+          include-templates: false
+
+      - name: Install virtual display and Mesa
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri
+
+      - name: Run repository verification (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: xvfb-run -a pwsh -NoProfile -File ./scripts/ci/Invoke-CI.ps1 -GodotBin "$(command -v godot)"
+
+      - name: Run repository verification (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/ci/Invoke-CI.ps1 -GodotBin godot
+
+      - name: Upload Manifest Liquid Glass visual evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6fb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: manifest-liquid-glass-${{ matrix.os }}-${{ github.run_id }}
+          path: artifacts/test-results/manifest-liquid-glass/*.png
+          if-no-files-found: warn

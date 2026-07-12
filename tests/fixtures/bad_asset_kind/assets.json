@@ -1,0 +1,10 @@
+{
+  "assets": [
+    {
+      "id": "not_font",
+      "relativePath": "assets/not_font.svg",
+      "kind": "font",
+      "contentHash": "sha256:7f88889b01b23e20b8522a3f195a5b2d7597341e9465ed4139e639f56b30d28a"
+    }
+  ]
+}

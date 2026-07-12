@@ -1,0 +1,6 @@
+[gd_resource type="Translation" format=3]
+
+[resource]
+resource_name = "example.basic.zh_CN"
+locale = "zh_CN"
+messages = {&"basic.greet": "发送问候", &"basic.hint": "修改名字，然后发送一个生成的 UI 事件。", &"basic.title": "Manifest UI 基础示例"}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "godot.manifest-ui.strings.schema.json",
+  "type": "object",
+  "required": ["schemaVersion", "defaultLocale", "locales", "strings"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "defaultLocale": { "type": "string", "minLength": 1 },
+    "locales": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "uniqueItems": true },
+    "strings": {
+      "type": "object",
+      "additionalProperties": { "type": "object", "additionalProperties": { "type": "string" } }
+    }
+  }
+}

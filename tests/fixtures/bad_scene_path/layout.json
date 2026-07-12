@@ -1,0 +1,15 @@
+{
+  "root": {
+    "id": "Root",
+    "type": "Control",
+    "name": "Root",
+    "children": [
+      {
+        "id": "Child",
+        "type": "SceneInstance",
+        "name": "Child",
+        "scenePath": "res://missing/Nope.tscn"
+      }
+    ]
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "root": {
+    "id": "InventoryWidget",
+    "type": "Control",
+    "name": "InventoryWidget",
+    "properties": {
+      "anchors_preset": 15,
+      "anchor_right": 1.0,
+      "anchor_bottom": 1.0,
+      "grow_horizontal": 2,
+      "grow_vertical": 2
+    },
+    "children": [
+      {
+        "id": "Card",
+        "type": "PanelContainer",
+        "name": "Card",
+        "properties": {
+          "anchors_preset": 8,
+          "anchor_left": 0.5,
+          "anchor_top": 0.5,
+          "anchor_right": 0.5,
+          "anchor_bottom": 0.5,
+          "offset_left": -360.0,
+          "offset_top": -250.0,
+          "offset_right": 360.0,
+          "offset_bottom": 250.0
+        },
+        "children": [
+          {
+            "id": "Content",
+            "type": "VBoxContainer",
+            "name": "Content",
+            "properties": {
+              "layout_mode": 2,
+              "theme_override_constants/separation": 10
+            },
+            "children": [
+              {
+                "id": "TitleLabel",
+                "type": "Label",
+                "name": "TitleLabel",
+                "localization": {
+                  "text": "inventory.title"
+                }
+              },
+              {
+                "id": "Toolbar",
+                "type": "HBoxContainer",
+                "name": "Toolbar",
+                "children": [
+                  {
+                    "id": "FilterInput",
+                    "type": "LineEdit",
+                    "name": "FilterInput",
+                    "properties": {
+                      "custom_minimum_size": [420, 0],
+                      "placeholder_text": "Filter by name or SKU"
+                    }
+                  },
+                  {
+                    "id": "RefreshButton",
+                    "type": "Button",
+                    "name": "RefreshButton",
+                    "localization": {
+                      "text": "inventory.refresh"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "SummaryLabel",
+                "type": "Label",
+                "name": "SummaryLabel",
+                "properties": {
+                  "text": ""
+                }
+              },
+              {
+                "id": "CapacityBar",
+                "type": "ProgressBar",
+                "name": "CapacityBar",
+                "properties": {
+                  "max_value": 40.0,
+                  "show_percentage": true,
+                  "value": 0.0
+                }
+              },
+              {
+                "id": "EmptyState",
+                "type": "Label",
+                "name": "EmptyState",
+                "localization": {
+                  "text": "inventory.empty"
+                }
+              },
+              {
+                "id": "Scroll",
+                "type": "ScrollContainer",
+                "name": "Scroll",
+                "properties": {
+                  "custom_minimum_size": [640, 300]
+                },
+                "children": [
+                  {
+                    "id": "Rows",
+                    "type": "VBoxContainer",
+                    "name": "Rows",
+                    "properties": {
+                      "layout_mode": 2
+                    },
+                    "children": [
+                      {
+                        "id": "RowTemplate",
+                        "type": "HBoxContainer",
+                        "name": "RowTemplate",
+                        "properties": {
+                          "visible": false
+                        },
+                        "children": [
+                          {
+                            "id": "SkuLabel",
+                            "type": "Label",
+                            "name": "SkuLabel",
+                            "properties": {
+                              "custom_minimum_size": [110, 0],
+                              "text": ""
+                            }
+                          },
+                          {
+                            "id": "NameLabel",
+                            "type": "Label",
+                            "name": "NameLabel",
+                            "properties": {
+                              "custom_minimum_size": [360, 0],
+                              "text": ""
+                            }
+                          },
+                          {
+                            "id": "QuantityLabel",
+                            "type": "Label",
+                            "name": "QuantityLabel",
+                            "properties": {
+                              "text": ""
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

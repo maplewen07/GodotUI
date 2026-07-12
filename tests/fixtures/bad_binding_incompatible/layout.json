@@ -1,0 +1,15 @@
+{
+  "root": {
+    "id": "BadIncompatibleWidget",
+    "type": "Control",
+    "name": "BadIncompatibleWidget",
+    "children": [
+      {
+        "id": "PlainButton",
+        "type": "Button",
+        "name": "PlainButton",
+        "properties": { "text": "" }
+      }
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "exitCode": 1,
+  "diagnostics": [
+    { "code": "MUI2201", "file": "bindings.json", "jsonPointer": "/bindings/TitleLabel/missingProperty" },
+    { "code": "MUI2201", "file": "bindings.json", "jsonPointer": "/bindings/TitleLabel/missingProperty" },
+    { "code": "MUI2201", "file": "bindings.json", "jsonPointer": "/bindings/TitleLabel/missingProperty" }
+  ]
+}

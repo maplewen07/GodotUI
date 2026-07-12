@@ -1,0 +1,167 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://generated/ui/liquid_glass/LiquidGlassWidget.cs" id="1_widget"]
+[ext_resource type="Script" path="res://addons/liquid_glass/runtime/LiquidGlassButton.cs" id="2_script"]
+[ext_resource type="Script" path="res://addons/liquid_glass/runtime/LiquidGlassPanel.cs" id="3_script"]
+[ext_resource type="Script" path="res://addons/liquid_glass/runtime/LiquidGlassSlider.cs" id="4_script"]
+[ext_resource type="Resource" path="res://ui/liquid_glass/assets/frosted_superellipse_style_resource.tres" id="5_asset"]
+[ext_resource type="Texture2D" path="res://ui/liquid_glass/assets/liquid_glass_background.svg" id="6_asset"]
+[ext_resource type="Resource" path="res://ui/liquid_glass/assets/vibrant_rounded_style_resource.tres" id="7_asset"]
+
+[node name="LiquidGlassWidget" type="Control"]
+script = ExtResource("1_widget")
+anchor_bottom = 1.0
+anchor_right = 1.0
+anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="."]
+anchor_bottom = 1.0
+anchor_right = 1.0
+anchors_preset = 15
+expand_mode = 1
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch_mode = 6
+texture = ExtResource("6_asset")
+
+[node name="TitleLabel" type="Label" parent="."]
+anchor_bottom = 0.5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchors_preset = 8
+mouse_filter = 2
+offset_bottom = -140.0
+offset_left = -300.0
+offset_right = 300.0
+offset_top = -170.0
+text = "LIQUID GLASS / MANIFEST UI"
+theme_override_font_sizes/font_size = 20
+
+[node name="PrimaryGlass" type="Control" parent="."]
+script = ExtResource("3_script")
+Preset = 4
+Style = ExtResource("5_asset")
+accessibility_name = "Frosted superellipse panel"
+anchor_bottom = 0.5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchors_preset = 8
+offset_bottom = 45.0
+offset_left = -300.0
+offset_right = 30.0
+offset_top = -132.0
+
+[node name="PrimaryTitle" type="Label" parent="PrimaryGlass"]
+mouse_filter = 2
+offset_bottom = 56.0
+offset_left = 28.0
+offset_right = 302.0
+offset_top = 24.0
+text = "FROSTED / SUPERELLIPSE"
+theme_override_font_sizes/font_size = 18
+
+[node name="PrimaryDescription" type="Label" parent="PrimaryGlass"]
+mouse_filter = 2
+offset_bottom = 70.0
+offset_left = 28.0
+offset_right = 302.0
+offset_top = 46.0
+text = "Style loaded from a Manifest Resource"
+theme_override_font_sizes/font_size = 14
+
+[node name="OverlapGlass" type="Control" parent="."]
+script = ExtResource("3_script")
+Preset = 4
+Style = ExtResource("7_asset")
+accessibility_name = "Vibrant overlap panel"
+anchor_bottom = 0.5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchors_preset = 8
+offset_bottom = 100.0
+offset_left = -50.0
+offset_right = 250.0
+offset_top = -60.0
+
+[node name="OverlapTitle" type="Label" parent="OverlapGlass"]
+mouse_filter = 2
+offset_bottom = 60.0
+offset_left = 28.0
+offset_right = 272.0
+offset_top = 28.0
+text = "VIBRANT OVERLAP"
+theme_override_font_sizes/font_size = 18
+
+[node name="OverlapDescription" type="Label" parent="OverlapGlass"]
+mouse_filter = 2
+offset_bottom = 98.0
+offset_left = 28.0
+offset_right = 272.0
+offset_top = 66.0
+text = "Manifest drives order and behavior"
+theme_override_font_sizes/font_size = 14
+
+[node name="ActionButton" type="Control" parent="."]
+script = ExtResource("2_script")
+Text = "Apply glass"
+accessibility_description = "Activates the manifest generated Liquid Glass action."
+accessibility_name = "Apply glass effect"
+anchor_bottom = 0.5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchors_preset = 8
+offset_bottom = 150.0
+offset_left = -280.0
+offset_right = -115.0
+offset_top = 105.0
+
+[node name="IntensitySlider" type="Control" parent="."]
+script = ExtResource("4_script")
+MaxValue = 1.0
+MinValue = 0.0
+Step = 0.05
+Value = 0.45
+accessibility_description = "Adjusts the manifest input value from zero to one."
+accessibility_name = "Glass intensity"
+anchor_bottom = 0.5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchors_preset = 8
+offset_bottom = 148.0
+offset_left = -80.0
+offset_right = 170.0
+offset_top = 108.0
+
+[node name="IntensityLabel" type="Label" parent="."]
+anchor_bottom = 0.5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchors_preset = 8
+mouse_filter = 2
+offset_bottom = 144.0
+offset_left = 185.0
+offset_right = 280.0
+offset_top = 112.0
+text = ""
+
+[node name="StatusLabel" type="Label" parent="."]
+anchor_bottom = 0.5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchors_preset = 8
+mouse_filter = 2
+offset_bottom = 177.0
+offset_left = -280.0
+offset_right = 280.0
+offset_top = 154.0
+text = ""

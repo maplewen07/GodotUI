@@ -1,0 +1,15 @@
+{
+  "mvvm": {
+    "updatePolicy": "manual",
+    "fields": [
+      { "id": "badgeText", "path": "UI.Badge.Text", "value": "text", "collection": "none" }
+    ]
+  },
+  "bindings": {
+    "BadgeLabel.text": "viewmodel:badgeText"
+  },
+  "controls": [],
+  "events": {
+    "channels": []
+  }
+}

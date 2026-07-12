@@ -1,0 +1,100 @@
+{
+  "mvvm": {
+    "updatePolicy": "manual",
+    "fields": [
+      { "id": "title", "path": "UI.Phone.Title", "value": "text", "collection": "none" },
+      { "id": "status", "path": "UI.Phone.Status", "value": "text", "collection": "none" },
+      { "id": "searchText", "path": "UI.Phone.SearchText", "value": "text", "collection": "none" },
+      { "id": "contactCount", "path": "UI.Phone.ContactCount", "value": "number", "collection": "none" },
+      { "id": "battery", "path": "UI.Phone.Battery", "value": "number", "collection": "none" },
+      { "id": "showDetails", "path": "UI.Phone.ShowDetails", "value": "bool", "collection": "none" },
+      { "id": "contactsEnabled", "path": "UI.Phone.ContactsEnabled", "value": "bool", "collection": "none" },
+      { "id": "contacts", "path": "UI.Phone.Contacts", "value": "object", "collection": "list" },
+      { "id": "icon", "path": "UI.Phone.Icon", "value": "assetRef", "collection": "none" },
+      { "id": "panelTheme", "path": "UI.Phone.PanelTheme", "value": "text", "collection": "none" }
+    ]
+  },
+  "bindings": {
+    "Panel.themeClass": "viewmodel:panelTheme",
+    "Panel/Content/IconTexture.texture": {
+      "source": "viewmodel:icon",
+      "fallback": "phone_icon"
+    },
+    "Panel/Content/TitleLabel.text": "viewmodel:title",
+    "Panel/Content/StatusLabel.text": "viewmodel:status",
+    "Panel/Content/SearchInput.text": "viewmodel:searchText",
+    "Panel/Content/CountLabel.text": {
+      "source": "viewmodel:contactCount",
+      "converter": "number",
+      "format": "Contacts opened {0} time(s)"
+    },
+    "Panel/Content/BatteryBar.value": {
+      "source": "viewmodel:battery",
+      "converter": "number"
+    },
+    "Panel/Content/DetailsLabel.visibility": "viewmodel:showDetails",
+    "Panel/Content/ContactsButton.enabled": "viewmodel:contactsEnabled"
+  },
+  "repeaters": [
+    {
+      "id": "contactsRepeater",
+      "target": "Panel/Content/Tabs/ContactsTab/ContactsList",
+      "template": "Panel/Content/Tabs/ContactsTab/ContactsList/ContactItemTemplate",
+      "source": "viewmodel:contacts",
+      "bindings": {
+        "NameLabel.text": "item:name",
+        "PhoneLabel.text": "item:phone"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "searchInput",
+      "target": "Panel/Content/SearchInput",
+      "property": "text",
+      "source": "viewmodel:searchText"
+    }
+  ],
+  "controls": [
+    {
+      "id": "ContactsButton",
+      "target": "Panel/Content/ContactsButton",
+      "widgetClass": "Button",
+      "events": [
+        {
+          "event": "pressed",
+          "handler": "open_contacts",
+          "channel": "phone.open_contacts"
+        }
+      ]
+    },
+    {
+      "id": "Tabs",
+      "target": "Panel/Content/Tabs",
+      "widgetClass": "TabContainer",
+      "events": [
+        {
+          "event": "tab_changed",
+          "handler": "switch_tab",
+          "channel": "phone.tab_changed"
+        }
+      ]
+    }
+  ],
+  "events": {
+    "channels": [
+      {
+        "id": "phone.open_contacts",
+        "scope": "phone",
+        "dispatch": "immediate",
+        "payload": []
+      },
+      {
+        "id": "phone.tab_changed",
+        "scope": "phone",
+        "dispatch": "immediate",
+        "payload": []
+      }
+    ]
+  }
+}

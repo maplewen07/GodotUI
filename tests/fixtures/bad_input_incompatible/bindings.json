@@ -1,0 +1,13 @@
+{
+  "mvvm": {
+    "fields": [
+      { "id": "title", "path": "UI.Bad.Title", "value": "text", "collection": "none" }
+    ]
+  },
+  "bindings": {},
+  "inputs": [
+    { "id": "badInput", "target": "Title", "property": "text", "source": "viewmodel:title" }
+  ],
+  "controls": [],
+  "events": { "channels": [] }
+}

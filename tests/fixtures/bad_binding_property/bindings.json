@@ -1,0 +1,12 @@
+{
+  "mvvm": {
+    "fields": [
+      { "id": "title", "path": "UI.Bad.Title", "value": "text" }
+    ]
+  },
+  "bindings": {
+    "TitleLabel.missingProperty": "viewmodel:title"
+  },
+  "controls": [],
+  "events": { "channels": [] }
+}

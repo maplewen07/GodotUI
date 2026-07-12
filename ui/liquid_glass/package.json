@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "packageId": "ui.liquid_glass",
+  "displayName": "Liquid Glass",
+  "designResolution": [960, 540],
+  "assets": "assets.json",
+  "layout": "layout.json",
+  "bindings": "bindings.json",
+  "codegen": "codegen.json",
+  "validation": "validation.json",
+  "runtime": {
+    "controllerScope": "instance"
+  },
+  "godot": {
+    "systemName": "liquid_glass",
+    "widgetClass": "LiquidGlassWidget",
+    "controllerClass": "GodotUi.Sample.LiquidGlass.LiquidGlassController",
+    "namespace": "GodotUi.Generated.LiquidGlass",
+    "outputDir": "generated/ui/liquid_glass",
+    "scenePath": "res://generated/ui/liquid_glass/LiquidGlassWidget.tscn"
+  }
+}

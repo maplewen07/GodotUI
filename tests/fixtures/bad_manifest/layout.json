@@ -1,0 +1,17 @@
+{
+  "root": {
+    "id": "BadWidget",
+    "type": "Control",
+    "name": "BadWidget",
+    "children": [
+      {
+        "id": "BadButton",
+        "type": "Button",
+        "name": "BadButton",
+        "properties": {
+          "text": "Bad"
+        }
+      }
+    ]
+  }
+}

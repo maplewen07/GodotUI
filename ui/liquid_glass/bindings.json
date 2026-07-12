@@ -1,0 +1,63 @@
+{
+  "mvvm": {
+    "updatePolicy": "immediate",
+    "fields": [
+      {
+        "id": "status",
+        "path": "UI.LiquidGlass.Status",
+        "value": "text",
+        "collection": "none"
+      },
+      {
+        "id": "intensity",
+        "path": "UI.LiquidGlass.Intensity",
+        "value": "number",
+        "collection": "none"
+      }
+    ]
+  },
+  "bindings": {
+    "StatusLabel.text": {
+      "source": "viewmodel:status",
+      "fallback": "Use mouse, keyboard, or controller UI actions"
+    },
+    "IntensityLabel.text": {
+      "source": "viewmodel:intensity",
+      "converter": "number",
+      "format": "{0:0.00}",
+      "fallback": 0.45
+    }
+  },
+  "repeaters": [],
+  "inputs": [
+    {
+      "id": "intensityInput",
+      "target": "IntensitySlider",
+      "property": "value",
+      "source": "viewmodel:intensity"
+    }
+  ],
+  "controls": [
+    {
+      "id": "ActionButton",
+      "target": "ActionButton",
+      "events": [
+        {
+          "event": "pressed",
+          "handler": "apply_glass",
+          "channel": "liquid_glass.apply"
+        }
+      ]
+    }
+  ],
+  "events": {
+    "channels": [
+      {
+        "id": "liquid_glass.apply",
+        "scope": "liquid_glass",
+        "dispatch": "immediate",
+        "payload": []
+      }
+    ]
+  }
+}

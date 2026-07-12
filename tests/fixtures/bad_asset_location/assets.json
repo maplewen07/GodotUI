@@ -1,0 +1,10 @@
+{
+  "assets": [
+    {
+      "id": "outside_icon",
+      "relativePath": "outside_icon.tres",
+      "kind": "texture",
+      "contentHash": "sha256:2b54401c1d6d473f8d7e4b5f7efafd490e9e20a74574f967aa706bd5007a99af"
+    }
+  ]
+}

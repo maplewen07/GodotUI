@@ -1,0 +1,39 @@
+{
+  "assets": [
+    {
+      "id": "phone_icon",
+      "relativePath": "assets/phone_icon.tres",
+      "kind": "texture",
+      "contentHash": "sha256:c3d1ac137bfee8551258eb3d075b7d898663ed99554ff0068fdaa2b995254320",
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "phone_font",
+      "relativePath": "assets/phone_font.tres",
+      "kind": "font",
+      "contentHash": "sha256:02524beaad4bf5887cf586ca03d67417070b4575285a8fce04cc7ae689e00cf7",
+      "defaultFont": true,
+      "defaultFontSize": 14
+    },
+    {
+      "id": "phone_theme",
+      "relativePath": "assets/phone_theme.json",
+      "kind": "theme",
+      "contentHash": "sha256:89b2aeb81d8a2e523428afe87017a65454f0f429ff4e375e9767f7515f366bba",
+      "theme": {
+        "outputPath": "generated/ui/phone/assets/PhoneTheme.tres",
+        "defaultFontAssetId": "phone_font",
+        "defaultFontSize": 14,
+        "typeVariations": [
+          {
+            "id": "PhonePanel",
+            "baseType": "Panel"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://generated/ui/inventory/InventoryWidget.cs" id="1_widget"]
+
+[node name="InventoryWidget" type="Control"]
+script = ExtResource("1_widget")
+anchor_bottom = 1.0
+anchor_right = 1.0
+anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card" type="PanelContainer" parent="."]
+anchor_bottom = 0.5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchors_preset = 8
+offset_bottom = 250.0
+offset_left = -360.0
+offset_right = 360.0
+offset_top = -250.0
+
+[node name="Content" type="VBoxContainer" parent="Card"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Card/Content"]
+text = "inventory.title"
+
+[node name="Toolbar" type="HBoxContainer" parent="Card/Content"]
+
+[node name="FilterInput" type="LineEdit" parent="Card/Content/Toolbar"]
+custom_minimum_size = Vector2(420, 0)
+placeholder_text = "Filter by name or SKU"
+
+[node name="RefreshButton" type="Button" parent="Card/Content/Toolbar"]
+text = "inventory.refresh"
+
+[node name="SummaryLabel" type="Label" parent="Card/Content"]
+text = ""
+
+[node name="CapacityBar" type="ProgressBar" parent="Card/Content"]
+max_value = 40.0
+show_percentage = true
+value = 0.0
+
+[node name="EmptyState" type="Label" parent="Card/Content"]
+text = "inventory.empty"
+
+[node name="Scroll" type="ScrollContainer" parent="Card/Content"]
+custom_minimum_size = Vector2(640, 300)
+
+[node name="Rows" type="VBoxContainer" parent="Card/Content/Scroll"]
+layout_mode = 2
+
+[node name="RowTemplate" type="HBoxContainer" parent="Card/Content/Scroll/Rows"]
+visible = false
+
+[node name="SkuLabel" type="Label" parent="Card/Content/Scroll/Rows/RowTemplate"]
+custom_minimum_size = Vector2(110, 0)
+text = ""
+
+[node name="NameLabel" type="Label" parent="Card/Content/Scroll/Rows/RowTemplate"]
+custom_minimum_size = Vector2(360, 0)
+text = ""
+
+[node name="QuantityLabel" type="Label" parent="Card/Content/Scroll/Rows/RowTemplate"]
+text = ""

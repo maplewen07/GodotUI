@@ -1,0 +1,7 @@
+{
+  "exitCode": 1,
+  "diagnostics": [
+    { "code": "MUI2201", "file": "bindings.json", "jsonPointer": "/bindings/MissingLabel/text" },
+    { "code": "MUI2201", "file": "bindings.json", "jsonPointer": "/controls/0/events/0/channel" }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "root": {
+    "id": "BadPropertyWidget",
+    "type": "Control",
+    "name": "BadPropertyWidget",
+    "children": [
+      {
+        "id": "TitleLabel",
+        "type": "Label",
+        "name": "TitleLabel",
+        "properties": { "text": "" }
+      }
+    ]
+  }
+}

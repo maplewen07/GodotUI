@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "toolVersion": "0.1.0-alpha.1",
+  "packageId": "ui.phone",
+  "inputHash": "sha256:5c813a89ce7fec82737c7f60d26c8981b0802b08a96334d75203cd2566e17e6f",
+  "inputs": [
+    {
+      "path": "ui/phone/assets.json",
+      "contentHash": "sha256:e94cc8b5a364b7197a1dba05db0a9b1e4113a41b0c28ffa77e6d47298977eba3"
+    },
+    {
+      "path": "ui/phone/bindings.json",
+      "contentHash": "sha256:08241dabd2cd269ffc01dce2a51d8da54bcba25c501f9f15c21cf1e44c29ea41"
+    },
+    {
+      "path": "ui/phone/codegen.json",
+      "contentHash": "sha256:94bcb82bc46bf7f80c8c6a0685b95246c6e39378b33f1198e591838838a2774d"
+    },
+    {
+      "path": "ui/phone/layout.json",
+      "contentHash": "sha256:b57f0bf5a8298eecda7280bcfed62b6e4894f4d054c8a813c9a3c9ae98eda17a"
+    },
+    {
+      "path": "ui/phone/package.json",
+      "contentHash": "sha256:65367325d5b075370ba06f46354de7db474722de03b75bad4db24252289ae9ae"
+    },
+    {
+      "path": "ui/phone/validation.json",
+      "contentHash": "sha256:6a7e2bb5fc797cbc9bcae3ba3db8601a4ed7ea42561186091f240aa5700faf68"
+    }
+  ],
+  "managedFiles": [
+    {
+      "path": "PhoneWidget.Catalog.g.cs",
+      "kind": "catalog",
+      "contentHash": "sha256:490ef6390b37c1ec89cd489f7eb960f3b7541bdac4b66326d6c989eae3890afd"
+    },
+    {
+      "path": "PhoneWidget.g.cs",
+      "kind": "code",
+      "contentHash": "sha256:36343657d93fcda7b1ac260175249a6243eff1690f4d368dd92d9020a9200a38"
+    },
+    {
+      "path": "PhoneWidget.tscn",
+      "kind": "scene",
+      "contentHash": "sha256:b09d9926f8b0650397aff0e117e4ebff0cec357172745e4c217eca57cc0b3f05"
+    },
+    {
+      "path": "assets/PhoneTheme.tres",
+      "kind": "theme",
+      "contentHash": "sha256:c23f0d206d3fa089404279b7cd1a868b377bbe95fbf4fb1250eee6ab66dd245d"
+    }
+  ]
+}

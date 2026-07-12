@@ -1,0 +1,7 @@
+{
+  "exitCode": 1,
+  "diagnostics": [
+    { "code": "MUI2301", "file": "assets.json", "jsonPointer": "/assets/0/kind" },
+    { "code": "MUI2302", "file": "assets.json", "jsonPointer": "/assets/0/contentHash" }
+  ]
+}

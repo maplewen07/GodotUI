@@ -1,0 +1,6 @@
+{
+  "exitCode": 1,
+  "diagnostics": [
+    { "code": "MUI2002", "file": "layout.json", "jsonPointer": "/root/children/0/scenePath" }
+  ]
+}

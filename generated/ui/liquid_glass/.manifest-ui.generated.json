@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "toolVersion": "0.1.0-alpha.1",
+  "packageId": "ui.liquid_glass",
+  "inputHash": "sha256:794c5bf0868dad6c9836e9d4ac07920ed4157793cd83e9021e4b1d4271b2c63e",
+  "inputs": [
+    {
+      "path": "ui/liquid_glass/assets.json",
+      "contentHash": "sha256:c64ae37d1ecdf11c01147d2da495ed123bd96b1c098700fd47a3ae5a9b9dbc05"
+    },
+    {
+      "path": "ui/liquid_glass/bindings.json",
+      "contentHash": "sha256:6394f59ca2a54a8325364a5d24397dd4695a70b314344b367a53c66430905829"
+    },
+    {
+      "path": "ui/liquid_glass/codegen.json",
+      "contentHash": "sha256:5fc511c4aba5463ebf574d8e8527974a8a11357f996d45bea0a9d885777e3dcf"
+    },
+    {
+      "path": "ui/liquid_glass/layout.json",
+      "contentHash": "sha256:6932e6ab2daefef0936a99d32cf84a312625b76e465e011451b27d90efddd81d"
+    },
+    {
+      "path": "ui/liquid_glass/package.json",
+      "contentHash": "sha256:0a8b93f548769b10240c8ba0772aa83cfe0ca86fb2b6d5ba6fedfbb618a945da"
+    },
+    {
+      "path": "ui/liquid_glass/validation.json",
+      "contentHash": "sha256:869d0ef2d963307ff3b9689e3997e78d6afea5b00564a297746bae44de1ca0f0"
+    }
+  ],
+  "managedFiles": [
+    {
+      "path": "LiquidGlassWidget.Catalog.g.cs",
+      "kind": "catalog",
+      "contentHash": "sha256:8e65b6e1af5c6ad6f4d506f4ad0c2d6bd00adae8ea3f56df627b6515648cec5a"
+    },
+    {
+      "path": "LiquidGlassWidget.g.cs",
+      "kind": "code",
+      "contentHash": "sha256:2c920a6fb52bab9f857fabeeaf124671ed97dba7dab863254c828c633b549002"
+    },
+    {
+      "path": "LiquidGlassWidget.tscn",
+      "kind": "scene",
+      "contentHash": "sha256:0e6c6fa10e87630c21fe111d317720c14d3e9dbab3fd0a35bb3c97923be686b3"
+    }
+  ]
+}
