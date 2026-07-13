@@ -6,7 +6,7 @@ promise.
 
 ## Manifest UI
 
-The current version is `0.1.0-alpha.1`.
+The current version is `0.1.0-alpha.2`.
 
 | Gate | Required result |
 | --- | --- |

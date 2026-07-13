@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "tagPrefix": "manifest-ui-v",
   "godotVersion": "4.7.0",
   "dotnetTargetFramework": "net8.0",

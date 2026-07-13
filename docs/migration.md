@@ -12,6 +12,17 @@ the tool version and must be regenerated after an upgrade.
 
 Do not merge two addon versions file by file.
 
+### Alpha.1 to alpha.2
+
+Alpha.2 adds optional visibility-priority fields to `ManifestUiOpenOptions`.
+Existing callers keep the same behavior because the defaults use the `global`
+scope, `ManifestUiPriorities.Hud`, and no suppression. No manifest schema
+change or source-package migration is required.
+
+Use a dedicated `VisibilityScope` when only a related group of Manager-owned
+UI should interact. `LayerId` remains a drawing-layer choice and does not
+replace the visibility scope.
+
 ## Replace and check
 
 1. Disable Manifest UI in Godot so its owned autoloads are removed cleanly.

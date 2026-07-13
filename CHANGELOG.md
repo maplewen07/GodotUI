@@ -6,6 +6,8 @@ named `manifest-ui-vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.1.0-alpha.2] - 2026-07-13
+
 ### Added
 
 - Release-grade tooling, runtime, editor, documentation, and test work for the
@@ -14,6 +16,14 @@ named `manifest-ui-vX.Y.Z`.
   properties that generate deterministic Godot `ExtResource` assignments.
 - Engine-verified scripted-control properties, inputs, and events, demonstrated
   by the repository's Manifest-driven Liquid Glass UI package.
+- Manager-owned UI visibility scopes, priorities, and opt-in lower-priority
+  suppression with `Hud`, `Overlay`, and `Modal` priority constants.
+
+### Changed
+
+- Suppressed handles remain Open while generated Store state continues to
+  update, then fully refresh when visibility returns.
+- Suppressed modals release blockers, pause ownership, and focus until restored.
 
 ### Fixed
 
@@ -41,5 +51,6 @@ named `manifest-ui-vX.Y.Z`.
   ResourceLoader request. Alpha verification recognizes only that exact
   upstream signature; beta, RC, and stable release gates remain strict.
 
-[Unreleased]: https://github.com/maplewen07/GodotUI/compare/manifest-ui-v0.1.0-alpha.1...HEAD
+[Unreleased]: https://github.com/maplewen07/GodotUI/compare/manifest-ui-v0.1.0-alpha.2...HEAD
+[0.1.0-alpha.2]: https://github.com/maplewen07/GodotUI/releases/tag/manifest-ui-v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/maplewen07/GodotUI/releases/tag/manifest-ui-v0.1.0-alpha.1

@@ -626,6 +626,7 @@ public partial class ManifestUiManager : Node
             }
 
             handle.State = ManifestUiState.Open;
+            ManifestUiRoot.Instance?.ShowWidget(widget, handle.Options, handle.RootAttachment);
         }
         catch
         {
@@ -994,6 +995,9 @@ public partial class ManifestUiManager : Node
     {
         var snapshot = (options ?? new ManifestUiOpenOptions()).Snapshot();
         snapshot.LayerId = string.IsNullOrWhiteSpace(snapshot.LayerId) ? "Main" : snapshot.LayerId;
+        snapshot.VisibilityScope = string.IsNullOrWhiteSpace(snapshot.VisibilityScope)
+            ? "global"
+            : snapshot.VisibilityScope.Trim();
         snapshot.ScreenId = string.IsNullOrWhiteSpace(snapshot.ScreenId) ? packageId : snapshot.ScreenId;
         snapshot.ReuseKey = string.IsNullOrWhiteSpace(snapshot.ReuseKey) ? snapshot.ScreenId : snapshot.ReuseKey;
         if (snapshot.IsModal)

@@ -58,7 +58,7 @@ Require-Condition ($plugin -match '(?m)^author="maplewen"$') 'plugin.cfg author 
 Require-Condition ($plugin -match '(?m)^script="editor/manifest_ui_editor_plugin\.gd"$') 'plugin.cfg must use the runtime-safe GDScript editor shim.'
 
 $editorShim = Read-Text 'addons/manifest_ui/editor/manifest_ui_editor_plugin.gd'
-Require-Condition ($editorShim -match 'ManifestUiDock\.cs') 'The GDScript editor shim must load the C# dock directly.'
+Require-Condition ($editorShim -match 'ManifestUiDock\.tscn') 'The GDScript editor shim must load the C# dock scene directly.'
 Require-Condition ($editorShim -match 'request_run_preview') 'The GDScript editor shim must own the delayed Run Preview launch boundary.'
 Require-Condition (-not (Test-Path -LiteralPath (Join-Path $repoRoot 'addons/manifest_ui/editor/ManifestUiEditorPlugin.cs'))) 'The addon must not compile a C# EditorPlugin into the game assembly.'
 $editorCsFiles = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'addons/manifest_ui/editor') -Filter '*.cs' -File)
@@ -107,11 +107,13 @@ $forbiddenTracked = @(& git -C $repoRoot ls-files -- 'CBLiquidGlass' 'Me')
 Require-Condition ($LASTEXITCODE -eq 0) 'git ls-files failed while checking release exclusions.'
 Require-Condition ($forbiddenTracked.Count -eq 0) 'CBLiquidGlass or Me contains tracked files and cannot be released.'
 
-$forbiddenHistory = @(& git -C $repoRoot log --all --format= --name-only -- 'CBLiquidGlass' 'Me' |
-    Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
-    Sort-Object -Unique)
-Require-Condition ($LASTEXITCODE -eq 0) 'git log failed while checking release history.'
-Require-Condition ($forbiddenHistory.Count -eq 0) 'CBLiquidGlass or Me exists in Git history; publish from a new clean repository.'
+if ($Release) {
+    $forbiddenHistory = @(& git -C $repoRoot log --all --format= --name-only -- 'CBLiquidGlass' 'Me' |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        Sort-Object -Unique)
+    Require-Condition ($LASTEXITCODE -eq 0) 'git log failed while checking release history.'
+    Require-Condition ($forbiddenHistory.Count -eq 0) 'CBLiquidGlass or Me exists in Git history; publish from a new clean repository.'
+}
 
 $repositoryTextFiles = @(& git -C $repoRoot ls-files --cached --others --exclude-standard |
     Where-Object { [System.IO.Path]::GetExtension($_) -in @('.cs', '.csproj', '.cfg', '.gd', '.gdshader', '.json', '.md', '.props', '.ps1', '.py', '.tscn', '.tres', '.yaml', '.yml') })

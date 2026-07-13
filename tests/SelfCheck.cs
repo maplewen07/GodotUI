@@ -31,6 +31,7 @@ public partial class SelfCheck : Node
             await RunCaseAsync("ScriptedBindingFallback", () => RunSync(RuntimeContractChecks.CheckScriptedBindingFallback));
             await RunCaseAsync("KeyedRepeaterPool", () => RunSync(RuntimeContractChecks.CheckKeyedRepeaterPool));
             await RunCaseAsync("AsyncLifecycleAndModal", () => RuntimeContractChecks.CheckBusAndAsyncLifecycle(this));
+            await RunCaseAsync("VisibilityPriority", () => RuntimeContractChecks.CheckVisibilityPriority(this));
             await RunCaseAsync("ReplaceCancellationAndExternalFree", () => RuntimeContractChecks.CheckReplaceCancellationAndExternalFree(this));
             await RunCaseAsync("CatalogReplacementFailureAndLocalization", () => RuntimeContractChecks.CheckCatalogReplacementAndLocalization(this));
             await RunCaseAsync("LifecycleStress1000", () => RuntimeContractChecks.CheckLifecycleStress(this, 1000));

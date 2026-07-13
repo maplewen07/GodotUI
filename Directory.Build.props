@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <ManifestUiVersion>0.1.0-alpha.1</ManifestUiVersion>
+    <ManifestUiVersion>0.1.0-alpha.2</ManifestUiVersion>
     <Version Condition="'$(Version)' == ''">$(ManifestUiVersion)</Version>
     <Authors>maplewen</Authors>
     <Company>maplewen</Company>

@@ -44,7 +44,7 @@ public static class ManifestUiTool
     public const int UsageOrEnvironmentFailure = 2;
     public const int InternalFailure = 3;
     public const int CurrentSchemaVersion = 1;
-    public const string ToolVersion = "0.1.0-alpha.1";
+    public const string ToolVersion = "0.1.0-alpha.2";
 
     private const string GeneratorId = "ManifestUi";
     private const string ManagedIndexFileName = ".manifest-ui.generated.json";

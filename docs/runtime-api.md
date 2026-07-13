@@ -80,6 +80,9 @@ handle and check its state, especially when an owner may call `QueueFree()`.
 | Option | Meaning |
 |---|---|
 | `LayerId` | Target Manifest UI layer; defaults to `Main` |
+| `VisibilityScope` | Exact, case-sensitive priority scope; blank values normalize to `global` |
+| `VisibilityPriority` | Priority within the visibility scope; defaults to `ManifestUiPriorities.Hud` |
+| `SuppressLowerPriority` | When true, suppress active lower-priority UI in the same scope |
 | `ScreenId` | Scope identity used for screen-scoped Controllers |
 | `ReuseKey` | Additional identity for `Reuse` and `Replace` |
 | `Mode` | `Reuse`, `Replace`, or `Stack` |
@@ -99,6 +102,23 @@ opens the new generation.
 
 User callbacks are isolated by runtime diagnostics: one failing callback does
 not prevent cleanup or focus restoration.
+
+### Visibility priority
+
+`ManifestUiPriorities` provides `Hud = 0`, `Overlay = 100`, and `Modal = 200`.
+Only active Manager-owned UI in the same `VisibilityScope` participates. The
+highest active `SuppressLowerPriority` priority hides lower priorities while
+equal priorities coexist; different scopes do not interact.
+
+Suppression is presentation state, not lifecycle state. A suppressed handle
+remains `Open`, its Controller and Store stay live, and a generated Widget
+resets its binding cursor and fully flushes before becoming visible again. A
+suppressed suppressor remains part of the calculation so nested suppression is
+restored when a higher suppressor closes. Suppressed modals release their
+blocker, pause request, and focus ownership, then reacquire them on restore.
+
+`LayerId` controls drawing placement only. Use `VisibilityScope` to define
+which Manager-owned UI may suppress each other.
 
 ## Controller scopes
 

@@ -54,9 +54,19 @@ public enum ManifestUiCancelPolicy
     InvokeCallback,
 }
 
+public static class ManifestUiPriorities
+{
+    public const int Hud = 0;
+    public const int Overlay = 100;
+    public const int Modal = 200;
+}
+
 public sealed class ManifestUiOpenOptions
 {
     public string LayerId { get; set; } = "Main";
+    public string VisibilityScope { get; set; } = "global";
+    public int VisibilityPriority { get; set; } = ManifestUiPriorities.Hud;
+    public bool SuppressLowerPriority { get; set; }
     public string ScreenId { get; set; } = "";
     public string ReuseKey { get; set; } = "";
     public ManifestUiOpenMode Mode { get; set; } = ManifestUiOpenMode.Reuse;

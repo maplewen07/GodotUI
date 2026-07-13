@@ -356,6 +356,157 @@ internal static class RuntimeContractChecks
         await manager.ReleaseAsync("ui.badge", closeInstances: true);
     }
 
+    public static async Task CheckVisibilityPriority(Node host)
+    {
+        var manager = ManifestUiManager.Instance ?? throw new InvalidOperationException("ManifestUiManager autoload missing");
+        var root = ManifestUiRoot.Instance ?? throw new InvalidOperationException("ManifestUiRoot autoload missing");
+        manager.RegisterCatalogEntry(new ManifestUiCatalogEntry(
+            "ui.phone",
+            PhoneScene,
+            () => new PhoneController(),
+            ManifestControllerScope.Package), replace: true);
+        manager.RegisterCatalogEntry(new ManifestUiCatalogEntry(
+            "ui.badge",
+            BadgeScene,
+            () => new BadgeController(),
+            ManifestControllerScope.Instance), replace: true);
+
+        const string scope = "runtime.visibility";
+        var low = await manager.OpenAsync("ui.phone", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_low",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = $"  {scope}  ",
+            VisibilityPriority = ManifestUiPriorities.Hud,
+        });
+        Require(low.Options.VisibilityScope == scope, "visibility scope should be trimmed");
+        Require(low.Widget is { Visible: true }, "low-priority widget should initially be visible");
+
+        var nonSuppressing = await manager.OpenAsync("ui.badge", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_non_suppressing",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = scope,
+            VisibilityPriority = ManifestUiPriorities.Overlay,
+        });
+        Require(low.Widget.Visible, "higher priority without suppression must not hide lower priority UI");
+        await manager.CloseAsync(nonSuppressing, ManifestUiCloseReason.Programmatic);
+
+        var equal = await manager.OpenAsync("ui.badge", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_equal",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = scope,
+            VisibilityPriority = ManifestUiPriorities.Hud,
+            SuppressLowerPriority = true,
+        });
+        Require(low.Widget.Visible, "equal priority suppressor must coexist");
+        await manager.CloseAsync(equal, ManifestUiCloseReason.Programmatic);
+
+        var otherScope = await manager.OpenAsync("ui.badge", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_other_scope",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = "runtime.visibility.other",
+            VisibilityPriority = ManifestUiPriorities.Modal,
+            SuppressLowerPriority = true,
+        });
+        Require(low.Widget.Visible, "different visibility scopes must not affect each other");
+        await manager.CloseAsync(otherScope, ManifestUiCloseReason.Programmatic);
+
+        var overlay = await manager.OpenAsync("ui.badge", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_overlay",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = scope,
+            VisibilityPriority = ManifestUiPriorities.Overlay,
+            SuppressLowerPriority = true,
+        });
+        Require(low.State == ManifestUiState.Open && !low.Widget.Visible, "suppressed handles must remain Open but invisible");
+        low.Controller!.Store.Set("status", "Changed while suppressed");
+
+        var modal = await manager.OpenAsync("ui.badge", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_modal",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = scope,
+            VisibilityPriority = ManifestUiPriorities.Modal,
+            SuppressLowerPriority = true,
+        });
+        Require(!overlay.Widget!.Visible && !low.Widget.Visible, "highest nested suppressor should hide all lower priorities");
+        await manager.CloseAsync(modal, ManifestUiCloseReason.Programmatic);
+        Require(overlay.Widget.Visible && !low.Widget.Visible, "closing the highest suppressor should restore the previous suppressor relationship");
+
+        await manager.HideAsync(overlay);
+        Require(low.Widget.Visible, "hiding a suppressor should restore lower-priority UI");
+        Require(
+            low.Widget.GetNode<Label>("Panel/Content/StatusLabel").Text == "Changed while suppressed",
+            "restored generated UI should catch up Store changes made while suppressed");
+        await manager.ShowAsync(overlay);
+        Require(!low.Widget.Visible, "showing the suppressor should reapply priority visibility");
+        await manager.CloseAsync(overlay, ManifestUiCloseReason.Programmatic);
+        Require(low.Widget.Visible, "closing the suppressor should restore lower-priority UI");
+
+        var external = await manager.OpenAsync("ui.badge", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_external_free",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = scope,
+            VisibilityPriority = ManifestUiPriorities.Overlay,
+            SuppressLowerPriority = true,
+        });
+        Require(!low.Widget.Visible, "external-free fixture should suppress the low widget before deletion");
+        external.Widget!.QueueFree();
+        await host.ToSignal(host.GetTree(), SceneTree.SignalName.ProcessFrame);
+        await host.ToSignal(host.GetTree(), SceneTree.SignalName.ProcessFrame);
+        Require(low.Widget.Visible, "invalid suppressor cleanup should restore lower-priority UI");
+
+        await manager.CloseAsync(low, ManifestUiCloseReason.Programmatic);
+
+        const string modalScope = "runtime.visibility.modal";
+        var lowModal = await manager.OpenAsync("ui.phone", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_low_modal",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = modalScope,
+            VisibilityPriority = ManifestUiPriorities.Hud,
+            IsModal = true,
+            PauseTree = true,
+        });
+        Require(host.GetTree().Paused && root.IsModalLayerActive(), "visible modal should own pause and modal input");
+        var modalFocus = host.GetViewport().GuiGetFocusOwner();
+        Require(
+            modalFocus is not null && (ReferenceEquals(modalFocus, lowModal.Widget) || lowModal.Widget!.IsAncestorOf(modalFocus)),
+            "visible modal should own focus");
+
+        var modalSuppressor = await manager.OpenAsync("ui.badge", new ManifestUiOpenOptions
+        {
+            ScreenId = "visibility_modal_suppressor",
+            Mode = ManifestUiOpenMode.Stack,
+            VisibilityScope = modalScope,
+            VisibilityPriority = ManifestUiPriorities.Overlay,
+            SuppressLowerPriority = true,
+        });
+        Require(lowModal.State == ManifestUiState.Open && !lowModal.Widget!.Visible, "suppressed modal should remain Open");
+        Require(!host.GetTree().Paused && !root.IsModalLayerActive(), "suppressed modal should release pause and modal input");
+        var suppressedFocus = host.GetViewport().GuiGetFocusOwner();
+        Require(
+            suppressedFocus is null || !ReferenceEquals(suppressedFocus, lowModal.Widget) && !lowModal.Widget.IsAncestorOf(suppressedFocus),
+            "suppressed modal should release focus from its subtree");
+
+        await manager.CloseAsync(modalSuppressor, ManifestUiCloseReason.Programmatic);
+        Require(lowModal.Widget.Visible && host.GetTree().Paused && root.IsModalLayerActive(), "restored modal should reacquire visibility, pause, and modal input");
+        var restoredFocus = host.GetViewport().GuiGetFocusOwner();
+        Require(
+            restoredFocus is not null && (ReferenceEquals(restoredFocus, lowModal.Widget) || lowModal.Widget.IsAncestorOf(restoredFocus)),
+            "restored modal should reacquire focus");
+        await manager.CloseAsync(lowModal, ManifestUiCloseReason.Programmatic);
+        Require(!host.GetTree().Paused, "closing the restored modal should release pause");
+
+        await manager.ReleaseAsync("ui.phone", closeInstances: true);
+        await manager.ReleaseAsync("ui.badge", closeInstances: true);
+    }
+
     public static async Task CheckCatalogReplacementAndLocalization(Node host)
     {
         var manager = ManifestUiManager.Instance ?? throw new InvalidOperationException("ManifestUiManager autoload missing");
