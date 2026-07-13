@@ -12,7 +12,7 @@ Treat Source JSON as canonical. Treat generated scenes and generated C# as repla
 1. Locate `project.godot`, configured Manifest UI source roots, and the target `package.json`.
 2. Read the package and every referenced manifest before editing. Read [references/schema-v1.md](references/schema-v1.md) when changing manifest shape.
 3. Inspect existing Controllers and services before adding fields or events. Read [references/runtime.md](references/runtime.md) for lifecycle and service boundaries.
-4. Edit Source JSON and handwritten code only. Never hand-edit `.g.cs`, generated `.tscn`, derived `.tres`, reports, or `.manifest-ui.generated.json`.
+4. Edit Source JSON and handwritten code by default. For visual scene edits, save the generated `.tscn` and immediately run `export-scene` before any regeneration. Never hand-edit `.g.cs`, derived `.tres`, reports, or `.manifest-ui.generated.json`.
 5. Run `scripts/quick_validate.py` for the package. Resolve errors by diagnostic code and JSON pointer.
 6. Run generation only after validation succeeds. Run Verify after generation and ensure a second generate-check reports no drift.
 7. Summarize Source changes, generated outputs, diagnostics, and verification results.
@@ -41,6 +41,7 @@ For direct CLI use:
 
 ```powershell
 manifest-ui validate ui/phone/package.json --format text
+manifest-ui export-scene ui/phone/package.json --godot $env:GODOT_BIN
 manifest-ui generate ui/phone/package.json --check
 manifest-ui verify ui/phone/package.json
 ```

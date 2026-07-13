@@ -36,6 +36,7 @@ Current codes:
 | `MUI3001` | Generation plan, drift, atomic commit, or managed-clean error | Validate, inspect generated ownership, then regenerate |
 | `MUI4001` | Generated PackedScene verification error | Regenerate, import in Godot, and run Verify again |
 | `MUI4005` | Generated root type or stale C# editor assembly | Confirm the generated script path; rebuild Debug and restart Godot when the attached script belongs to an earlier hot reload |
+| `MUI4100` | TSCN export cannot preserve scene data or complete its atomic write | Remove unsupported scene-only data, register external resources, save the scene, and retry Export JSON |
 | `MUI5001` | Missing/unknown command or invalid CLI usage | Run `manifest-ui --help` |
 | `MUI5002` | Invalid output format | Use `text`, `json`, or `sarif` |
 | `MUI5003` | Project, SDK, Godot, or schema environment error | Run Doctor and correct the reported prerequisite |

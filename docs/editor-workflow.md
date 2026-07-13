@@ -43,6 +43,7 @@ After creation:
 | **Doctor** | Check project, SDK, and configured Godot environment |
 | **Validate** | Run in-process validation and write the package report |
 | **Generate** | Commit the deterministic generation plan |
+| **Export JSON** | Reconcile a saved generated TSCN into layout/assets/strings source JSON, then validate without regenerating |
 | **Verify** | Check managed drift and instantiate/inspect the generated PackedScene |
 | **Preview** | Show verified output without running its Controller |
 | **Run Preview** | Show verified output with normal runtime behavior |
@@ -98,5 +99,6 @@ Edit source -> Validate -> Generate -> Verify -> Preview/Run Preview
             -> generate --check -> project tests
 ```
 
-Never edit generated scenes or `.g.cs` files to make a preview look correct.
-Change source JSON or the handwritten Controller, regenerate, and verify again.
+For visual editing, use `Generate -> edit and save TSCN -> Export JSON ->
+Validate -> Generate`. Export blocks unsupported scene-only data rather than
+silently dropping it. Generated `.g.cs` files remain read-only.

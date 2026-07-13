@@ -106,6 +106,7 @@ public static class ManifestUiTool
                 "doctor" => Doctor(commandArgs, projectRoot, cancellationToken),
                 "validate" => ValidateCommand(commandArgs, projectRoot, cancellationToken),
                 "generate" => GenerateCommand(commandArgs, projectRoot, cancellationToken),
+                "export-scene" => ExportSceneCommand(commandArgs, projectRoot, cancellationToken),
                 "verify" => VerifyCommand(commandArgs, projectRoot, cancellationToken),
                 "check" => CheckCommand(commandArgs, projectRoot, cancellationToken),
                 "migrate" => MigrateCommand(commandArgs, projectRoot, cancellationToken),
@@ -206,6 +207,105 @@ public static class ManifestUiTool
         return Complete(result, result.Ok ? $"Generated {package.Package.PackageId} -> {Path.GetRelativePath(root, package.GetOutputDir()).Replace('\\', '/')}" : null);
     }
 
+    private static ManifestUiToolResult ExportSceneCommand(string[] args, string? projectRoot, CancellationToken cancellationToken)
+    {
+        var packageArgument = GetPositionals(args).Single();
+        var root = ResolveProjectRoot(projectRoot ?? GetOption(args, "--project"), packageArgument);
+        var packagePath = ResolvePackagePath(packageArgument, root);
+        if (!File.Exists(packagePath))
+        {
+            return MissingInput(packagePath, "package", "package manifest does not exist");
+        }
+
+        var godot = ResolveGodotExecutable(GetOption(args, "--godot") ?? Environment.GetEnvironmentVariable("GODOT_BIN"));
+        if (godot is null)
+        {
+            return new ManifestUiToolResult
+            {
+                ExitCode = UsageOrEnvironmentFailure,
+                Diagnostics = new[]
+                {
+                    new ManifestDiagnostic("MUI5003", ManifestDiagnosticSeverity.Error, "GODOT_BIN", "/environment", 0, 0,
+                        "Godot 4.7 Mono executable was not found", "Pass --godot <exe>, set GODOT_BIN, or add godot/godot4 to PATH."),
+                },
+            };
+        }
+        if (!TryRunVersionCommand(godot, root, cancellationToken, out var version, out var versionFailure)
+            || !version.Contains("4.7", StringComparison.OrdinalIgnoreCase)
+            || !version.Contains("mono", StringComparison.OrdinalIgnoreCase))
+        {
+            return new ManifestUiToolResult
+            {
+                ExitCode = UsageOrEnvironmentFailure,
+                Diagnostics = new[]
+                {
+                    new ManifestDiagnostic("MUI5003", ManifestDiagnosticSeverity.Error, godot, "/godotVersion", 0, 0,
+                        $"Godot 4.7 Mono is required: {(string.IsNullOrWhiteSpace(versionFailure) ? version : versionFailure)}"),
+                },
+            };
+        }
+
+        var csproj = Directory.EnumerateFiles(root, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
+        if (csproj is null)
+        {
+            return MissingInput(root, "dotnet", "Godot C# project file was not found");
+        }
+        if (!TryRunProcess(
+                "dotnet",
+                new[] { "build", csproj, "--configuration", "Debug", "--nologo", "-t:Rebuild" },
+                root,
+                cancellationToken,
+                TimeSpan.FromMinutes(3),
+                out _,
+                out var buildFailure))
+        {
+            return new ManifestUiToolResult
+            {
+                ExitCode = UsageOrEnvironmentFailure,
+                Diagnostics = new[]
+                {
+                    new ManifestDiagnostic("MUI5003", ManifestDiagnosticSeverity.Error, Path.GetFileName(csproj), "/dotnetBuild", 0, 0,
+                        $"Godot C# build failed: {buildFailure}"),
+                },
+            };
+        }
+
+        var requestDirectory = Path.Combine(root, ".godot", "manifest_ui_export");
+        Directory.CreateDirectory(requestDirectory);
+        var operationId = Guid.NewGuid().ToString("N");
+        var requestPath = Path.Combine(requestDirectory, operationId + ".request.json");
+        var resultPath = Path.Combine(requestDirectory, operationId + ".result.json");
+        try
+        {
+            File.WriteAllText(requestPath, JsonSerializer.Serialize(new { packagePath, resultPath }, JsonOptions), Utf8NoBom);
+            var runnerArguments = new[]
+            {
+                "--headless", "--path", root,
+                "--scene", "res://addons/manifest_ui/tooling/engine/ManifestUiExportRunner.tscn",
+                "--", "--manifest-ui-export-request", requestPath,
+            };
+            TryRunProcess(godot, runnerArguments, root, cancellationToken, TimeSpan.FromMinutes(3), out _, out var runnerFailure);
+            if (!File.Exists(resultPath))
+            {
+                return new ManifestUiToolResult
+                {
+                    ExitCode = InternalFailure,
+                    Diagnostics = new[]
+                    {
+                        new ManifestDiagnostic("MUI4100", ManifestDiagnosticSeverity.Error, packagePath, "/export", 0, 0,
+                            $"Godot export runner produced no result: {runnerFailure}"),
+                    },
+                };
+            }
+            return ReadToolResult(resultPath);
+        }
+        finally
+        {
+            if (File.Exists(requestPath)) File.Delete(requestPath);
+            if (File.Exists(resultPath)) File.Delete(resultPath);
+        }
+    }
+
     private static ManifestUiToolResult MigrateCommand(string[] args, string? projectRoot, CancellationToken cancellationToken)
     {
         var packageArgument = GetPositionals(args).Single();
@@ -276,6 +376,7 @@ public static class ManifestUiTool
           manifest-ui doctor --project <dir> [--godot <exe>]
           manifest-ui validate <package> [--project <dir>] [--format text|json|sarif] [--write-report]
           manifest-ui generate <package> [--project <dir>] [--check] [--clean]
+          manifest-ui export-scene <package> [--project <dir>] [--godot <exe>]
           manifest-ui verify <package> [--project <dir>]
           manifest-ui check --project <dir> [--release]
           manifest-ui migrate --check <package>
@@ -685,6 +786,10 @@ public static class ManifestUiTool
                 valueOptions = new HashSet<string>(StringComparer.Ordinal) { "--project" };
                 flags = new HashSet<string>(StringComparer.Ordinal) { "--check", "--clean" };
                 break;
+            case "export-scene":
+                valueOptions = new HashSet<string>(StringComparer.Ordinal) { "--project", "--godot" };
+                flags = new HashSet<string>(StringComparer.Ordinal);
+                break;
             case "verify":
                 valueOptions = new HashSet<string>(StringComparer.Ordinal) { "--project" };
                 flags = new HashSet<string>(StringComparer.Ordinal);
@@ -757,6 +862,7 @@ public static class ManifestUiTool
             "validate" when positionals.Count != 1 => "validate requires exactly one <package.json> argument.",
             "generate" when positionals.Count != 1 => "generate requires exactly one <package.json> argument.",
             "generate" when seen.Contains("--check") && seen.Contains("--clean") => "generate --check and --clean cannot be used together.",
+            "export-scene" when positionals.Count != 1 => "export-scene requires exactly one <package.json> argument.",
             "verify" when positionals.Count != 1 => "verify requires exactly one <package.json> argument.",
             "check" when positionals.Count != 0 => "check accepts only --project <dir> and --release.",
             "migrate" when positionals.Count != 1 || !seen.Contains("--check") => "migrate usage: manifest-ui migrate --check <package.json>",
@@ -846,6 +952,115 @@ public static class ManifestUiTool
             failure = ex.Message;
             return false;
         }
+    }
+
+    private static string? ResolveGodotExecutable(string? configured)
+    {
+        var pathDirectories = (Environment.GetEnvironmentVariable("PATH") ?? "")
+            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var extensions = OperatingSystem.IsWindows()
+            ? new[] { ".exe", ".cmd", ".bat", "" }
+            : new[] { "" };
+        var names = string.IsNullOrWhiteSpace(configured) ? new[] { "godot", "godot4" } : new[] { configured };
+        foreach (var name in names)
+        {
+            var explicitPath = Path.GetFullPath(name);
+            if (File.Exists(explicitPath)) return explicitPath;
+            if (Path.IsPathRooted(name) || name.Contains(Path.DirectorySeparatorChar) || name.Contains(Path.AltDirectorySeparatorChar)) continue;
+            foreach (var directory in pathDirectories)
+            {
+                foreach (var extension in extensions)
+                {
+                    var candidate = Path.Combine(directory, name + extension);
+                    if (File.Exists(candidate)) return Path.GetFullPath(candidate);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static bool TryRunProcess(
+        string executable,
+        IEnumerable<string> arguments,
+        string workingDirectory,
+        CancellationToken cancellationToken,
+        TimeSpan timeout,
+        out string output,
+        out string failure)
+    {
+        output = "";
+        failure = "";
+        try
+        {
+            var startInfo = new ProcessStartInfo(executable)
+            {
+                WorkingDirectory = workingDirectory,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+            foreach (var argument in arguments) startInfo.ArgumentList.Add(argument);
+            using var process = Process.Start(startInfo);
+            if (process is null)
+            {
+                failure = "process did not start";
+                return false;
+            }
+            var standardOutput = process.StandardOutput.ReadToEndAsync();
+            var standardError = process.StandardError.ReadToEndAsync();
+            var stopwatch = Stopwatch.StartNew();
+            while (!process.WaitForExit(100))
+            {
+                if (cancellationToken.IsCancellationRequested || stopwatch.Elapsed >= timeout)
+                {
+                    try { process.Kill(entireProcessTree: true); } catch (InvalidOperationException) { }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    failure = $"process timed out after {timeout.TotalSeconds:0} seconds";
+                    return false;
+                }
+            }
+            output = string.Join("\n", standardOutput.GetAwaiter().GetResult(), standardError.GetAwaiter().GetResult()).Trim();
+            if (process.ExitCode != 0)
+            {
+                failure = $"process exited with code {process.ExitCode}: {output}".TrimEnd();
+                return false;
+            }
+            return true;
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
+        {
+            failure = ex.Message;
+            return false;
+        }
+    }
+
+    private static ManifestUiToolResult ReadToolResult(string path)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        var root = document.RootElement;
+        var diagnostics = root.TryGetProperty("diagnostics", out var diagnosticsElement)
+            ? diagnosticsElement.EnumerateArray().Select(item => new ManifestDiagnostic(
+                item.GetProperty("code").GetString() ?? "MUI4100",
+                item.GetProperty("severity").ValueKind == JsonValueKind.String
+                    ? Enum.Parse<ManifestDiagnosticSeverity>(item.GetProperty("severity").GetString()!, ignoreCase: true)
+                    : (ManifestDiagnosticSeverity)item.GetProperty("severity").GetInt32(),
+                item.GetProperty("file").GetString() ?? "",
+                item.GetProperty("jsonPointer").GetString() ?? "",
+                item.GetProperty("line").GetInt64(),
+                item.GetProperty("column").GetInt64(),
+                item.GetProperty("message").GetString() ?? "",
+                item.TryGetProperty("hint", out var hint) ? hint.GetString() ?? "" : "")).ToArray()
+            : Array.Empty<ManifestDiagnostic>();
+        var messages = root.TryGetProperty("messages", out var messagesElement)
+            ? messagesElement.EnumerateArray().Select(item => item.GetString() ?? "").ToArray()
+            : Array.Empty<string>();
+        return new ManifestUiToolResult
+        {
+            ExitCode = root.GetProperty("exitCode").GetInt32(),
+            Diagnostics = diagnostics,
+            Messages = messages,
+        };
     }
 
     private static ManifestUiToolResult Complete(ValidationResult result, string? message = null, bool environmentFailure = false)
@@ -1473,15 +1688,15 @@ public static class ManifestUiTool
             foreach (var (property, value) in node.Properties)
             {
                 Required(property, "layout.json", $"{logicalPath}.properties", result);
-                if (value.ValueKind != JsonValueKind.Object)
+                var propertyPath = $"{logicalPath}.properties.{property}";
+                if (!IsSupportedLayoutProperty(value))
                 {
+                    result.Error("layout.json", propertyPath, "must be a string, number, boolean, Vector2 array, assetRef, color, nodePath, or vector2i object");
                     continue;
                 }
 
-                var propertyPath = $"{logicalPath}.properties.{property}";
                 if (!TryReadAssetReference(value, out var assetId))
                 {
-                    result.Error("layout.json", propertyPath, "object property values must use { \"assetRef\": \"<asset-id>\" }");
                     continue;
                 }
 
@@ -2981,6 +3196,7 @@ public static class ManifestUiTool
             {
                 sb.AppendLine($"script = ExtResource(\"{scriptResources[node.ScriptPath]}\")");
             }
+            sb.AppendLine($"metadata/_manifest_ui_id = \"{Escape(node.Id)}\"");
             foreach (var (key, value) in node.Properties.Where(pair => !node.Localization.ContainsKey(pair.Key)).OrderBy(pair => pair.Key, StringComparer.Ordinal))
             {
                 sb.AppendLine($"{key} = {FormatValue(value, assetResources)}");
@@ -3005,6 +3221,18 @@ public static class ManifestUiTool
             if (TryReadAssetReference(value, out var assetId))
             {
                 return $"ExtResource(\"{assetResources[assetId].ExtResourceId}\")";
+            }
+            if (TryReadTypedLayoutProperty(value, "color", 4, out var color))
+            {
+                return $"Color({string.Join(", ", color.EnumerateArray().Select(item => item.GetRawText()))})";
+            }
+            if (TryReadTypedLayoutProperty(value, "nodePath", 0, out var nodePath))
+            {
+                return $"NodePath(\"{Escape(nodePath.GetString() ?? "")}\")";
+            }
+            if (TryReadTypedLayoutProperty(value, "vector2i", 2, out var vector2i, integerOnly: true))
+            {
+                return $"Vector2i({string.Join(", ", vector2i.EnumerateArray().Select(item => item.GetRawText()))})";
             }
 
             return value.ValueKind switch
@@ -3839,6 +4067,34 @@ public static class ManifestUiTool
 
         assetId = assetRef.GetString() ?? "";
         return !string.IsNullOrWhiteSpace(assetId);
+    }
+
+    private static bool IsSupportedLayoutProperty(JsonElement value)
+    {
+        return value.ValueKind is JsonValueKind.String or JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False
+            || value.ValueKind == JsonValueKind.Array && value.GetArrayLength() == 2 && value.EnumerateArray().All(item => item.ValueKind == JsonValueKind.Number)
+            || TryReadAssetReference(value, out _)
+            || TryReadTypedLayoutProperty(value, "color", 4, out _)
+            || TryReadTypedLayoutProperty(value, "nodePath", 0, out _)
+            || TryReadTypedLayoutProperty(value, "vector2i", 2, out _, integerOnly: true);
+    }
+
+    private static bool TryReadTypedLayoutProperty(JsonElement value, string name, int arrayLength, out JsonElement property, bool integerOnly = false)
+    {
+        property = default;
+        if (value.ValueKind != JsonValueKind.Object
+            || value.EnumerateObject().Count() != 1
+            || !value.TryGetProperty(name, out property))
+        {
+            return false;
+        }
+        if (arrayLength == 0)
+        {
+            return property.ValueKind == JsonValueKind.String;
+        }
+        return property.ValueKind == JsonValueKind.Array
+            && property.GetArrayLength() == arrayLength
+            && property.EnumerateArray().All(item => item.ValueKind == JsonValueKind.Number && (!integerOnly || item.TryGetInt64(out _)));
     }
 
     private static string ToResourcePath(string projectRoot, string path) => "res://" + Path.GetRelativePath(projectRoot, path).Replace('\\', '/');

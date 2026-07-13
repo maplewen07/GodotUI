@@ -4,7 +4,9 @@
 
 [node name="BadgeWidget" type="Control"]
 script = ExtResource("1_widget")
+metadata/_manifest_ui_id = "BadgeWidget"
 custom_minimum_size = Vector2(180, 24)
 
 [node name="BadgeLabel" type="Label" parent="."]
+metadata/_manifest_ui_id = "BadgeLabel"
 text = ""

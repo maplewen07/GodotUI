@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolVersion": "0.1.0-alpha.1",
+  "toolVersion": "0.1.0-alpha.2",
   "packageId": "ui.phone",
   "inputHash": "sha256:d1d5bce437e86a322bc339ab1a8b5e0df80e38a82912b1669bb70be02c82df48",
   "inputs": [
@@ -43,7 +43,7 @@
     {
       "path": "PhoneWidget.tscn",
       "kind": "scene",
-      "contentHash": "sha256:b09d9926f8b0650397aff0e117e4ebff0cec357172745e4c217eca57cc0b3f05"
+      "contentHash": "sha256:4f4f421b869013f9d884f2e5f69256e2d0c5373e38f7b8e998e4cdeb8dd1dd5b"
     },
     {
       "path": "assets/PhoneTheme.tres",

@@ -2,7 +2,7 @@
 
 `package.json` is the canonical entrypoint. It references:
 
-- `layout.json`: Control tree, properties, scene instances, scripted controls, static `{ "assetRef": "id" }` resource references, and localization keys.
+- `layout.json`: Control tree, properties, scene instances, scripted controls, static `{ "assetRef": "id" }` resource references, typed `color`/`nodePath`/`vector2i` values, and localization keys.
 - `bindings.json`: Store fields, property bindings, inputs, repeaters, controls, events, channels, and update policy.
 - `assets.json`: Package texture, font, theme, and generic `.tres`/`.res` resource assets, optional content hashes, and generated theme metadata.
 - `codegen.json`: Generated type names, required services, routes, and generator options.

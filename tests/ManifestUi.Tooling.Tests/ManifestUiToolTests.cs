@@ -9,6 +9,20 @@ public sealed class ManifestUiToolTests : IDisposable
     private readonly string _root = Path.Combine(Path.GetTempPath(), "manifest-ui-tests", Guid.NewGuid().ToString("N"));
 
     [Fact]
+    public void ExportScene_RequiresGodotWithoutChangingSources()
+    {
+        var package = CreateProject();
+        var layoutPath = Path.Combine(Path.GetDirectoryName(package)!, "layout.json");
+        var before = File.ReadAllText(layoutPath);
+
+        var result = ManifestUiTool.Execute(new[] { "export-scene", package, "--godot", Path.Combine(_root, "missing-godot.exe") }, _root);
+
+        Assert.Equal(ManifestUiTool.UsageOrEnvironmentFailure, result.ExitCode);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Message.Contains("Godot 4.7 Mono", StringComparison.Ordinal));
+        Assert.Equal(before, File.ReadAllText(layoutPath));
+    }
+
+    [Fact]
     public void Validate_ReturnsStructuredSourceLocation()
     {
         var package = CreateProject(designResolution: "[0, 720]");

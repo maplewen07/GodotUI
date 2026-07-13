@@ -10,6 +10,7 @@
 
 [node name="LiquidGlassWidget" type="Control"]
 script = ExtResource("1_widget")
+metadata/_manifest_ui_id = "LiquidGlassWidget"
 anchor_bottom = 1.0
 anchor_right = 1.0
 anchors_preset = 15
@@ -17,6 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Background" type="TextureRect" parent="."]
+metadata/_manifest_ui_id = "Background"
 anchor_bottom = 1.0
 anchor_right = 1.0
 anchors_preset = 15
@@ -28,6 +30,7 @@ stretch_mode = 6
 texture = ExtResource("6_asset")
 
 [node name="TitleLabel" type="Label" parent="."]
+metadata/_manifest_ui_id = "TitleLabel"
 anchor_bottom = 0.5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -43,6 +46,7 @@ theme_override_font_sizes/font_size = 20
 
 [node name="PrimaryGlass" type="Control" parent="."]
 script = ExtResource("3_script")
+metadata/_manifest_ui_id = "PrimaryGlass"
 Preset = 4
 Style = ExtResource("5_asset")
 accessibility_name = "Frosted superellipse panel"
@@ -57,6 +61,7 @@ offset_right = 30.0
 offset_top = -132.0
 
 [node name="PrimaryTitle" type="Label" parent="PrimaryGlass"]
+metadata/_manifest_ui_id = "PrimaryTitle"
 mouse_filter = 2
 offset_bottom = 56.0
 offset_left = 28.0
@@ -66,6 +71,7 @@ text = "FROSTED / SUPERELLIPSE"
 theme_override_font_sizes/font_size = 18
 
 [node name="PrimaryDescription" type="Label" parent="PrimaryGlass"]
+metadata/_manifest_ui_id = "PrimaryDescription"
 mouse_filter = 2
 offset_bottom = 70.0
 offset_left = 28.0
@@ -76,6 +82,7 @@ theme_override_font_sizes/font_size = 14
 
 [node name="OverlapGlass" type="Control" parent="."]
 script = ExtResource("3_script")
+metadata/_manifest_ui_id = "OverlapGlass"
 Preset = 4
 Style = ExtResource("7_asset")
 accessibility_name = "Vibrant overlap panel"
@@ -90,6 +97,7 @@ offset_right = 250.0
 offset_top = -60.0
 
 [node name="OverlapTitle" type="Label" parent="OverlapGlass"]
+metadata/_manifest_ui_id = "OverlapTitle"
 mouse_filter = 2
 offset_bottom = 60.0
 offset_left = 28.0
@@ -99,6 +107,7 @@ text = "VIBRANT OVERLAP"
 theme_override_font_sizes/font_size = 18
 
 [node name="OverlapDescription" type="Label" parent="OverlapGlass"]
+metadata/_manifest_ui_id = "OverlapDescription"
 mouse_filter = 2
 offset_bottom = 98.0
 offset_left = 28.0
@@ -109,6 +118,7 @@ theme_override_font_sizes/font_size = 14
 
 [node name="ActionButton" type="Control" parent="."]
 script = ExtResource("2_script")
+metadata/_manifest_ui_id = "ActionButton"
 Text = "Apply glass"
 accessibility_description = "Activates the manifest generated Liquid Glass action."
 accessibility_name = "Apply glass effect"
@@ -124,6 +134,7 @@ offset_top = 105.0
 
 [node name="IntensitySlider" type="Control" parent="."]
 script = ExtResource("4_script")
+metadata/_manifest_ui_id = "IntensitySlider"
 MaxValue = 1.0
 MinValue = 0.0
 Step = 0.05
@@ -141,6 +152,7 @@ offset_right = 170.0
 offset_top = 108.0
 
 [node name="IntensityLabel" type="Label" parent="."]
+metadata/_manifest_ui_id = "IntensityLabel"
 anchor_bottom = 0.5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -154,6 +166,7 @@ offset_top = 112.0
 text = ""
 
 [node name="StatusLabel" type="Label" parent="."]
+metadata/_manifest_ui_id = "StatusLabel"
 anchor_bottom = 0.5
 anchor_left = 0.5
 anchor_right = 0.5

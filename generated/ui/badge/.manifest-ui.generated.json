@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "toolVersion": "0.1.0-alpha.1",
+  "toolVersion": "0.1.0-alpha.2",
   "packageId": "ui.badge",
-  "inputHash": "sha256:222630c41f017beb054d33978737357cc0db43f9d9625783e6e0dc8185ec47a4",
+  "inputHash": "sha256:f33285e7a6c072d6cbd99b2799424aec2c275dcef514e62347d0a6c909c05ce0",
   "inputs": [
     {
       "path": "ui/badge/assets.json",
-      "contentHash": "sha256:fe5b616a3f661bc0683333532802fb30aede922e3dc8bcaba6e21f9e41d0c4ca"
+      "contentHash": "sha256:3ff5f36c9d4b232659ddd88f4d22f3f01d313884e5a22190bda7a07a235333fa"
     },
     {
       "path": "ui/badge/bindings.json",
-      "contentHash": "sha256:33e23ccfe6821e7ebf4ce2a5dd7bdbc0563d337bf440eee290c34638c07266ec"
+      "contentHash": "sha256:824d0cbe6f13b470c1b387fc9ac085cf2ac75514adfe8596a8e0ab830370f991"
     },
     {
       "path": "ui/badge/codegen.json",
-      "contentHash": "sha256:94bcb82bc46bf7f80c8c6a0685b95246c6e39378b33f1198e591838838a2774d"
+      "contentHash": "sha256:ce3f9a00dea997f509c91712ec68637487478872578db8befdd022b8603f8154"
     },
     {
       "path": "ui/badge/layout.json",
@@ -43,7 +43,7 @@
     {
       "path": "BadgeWidget.tscn",
       "kind": "scene",
-      "contentHash": "sha256:f931a297f38b627814b14f541cee20844acbe92bbd813e2f1ba29756630bb4c3"
+      "contentHash": "sha256:515f4bd510bef80cf35a82cee6f24b4d0b8af08fa4886a2c5eae7e26a790a057"
     }
   ]
 }

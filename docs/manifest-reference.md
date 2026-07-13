@@ -99,10 +99,12 @@ Binding paths use node names relative to the generated root, not ids.
 ```
 
 Property values emit strings, numbers, booleans, two-number arrays (as
-`Vector2`), and declared asset references. Use Godot's serialized property
-names, such as `custom_minimum_size`, `offset_left`, or `placeholder_text`.
-The object form `{ "assetRef": "asset_id" }` emits an `ExtResource` and may
-reference a declared texture, font, theme, or generic resource asset.
+`Vector2`), and declared asset references. Common typed UI values use
+`{ "color": [r, g, b, a] }`, `{ "nodePath": "Panel/Button" }`, and
+`{ "vector2i": [x, y] }`. Use Godot's serialized property names, such as
+`custom_minimum_size`, `offset_left`, or `placeholder_text`. The object form
+`{ "assetRef": "asset_id" }` emits an `ExtResource` and may reference a
+declared texture, font, theme, or generic resource asset.
 
 Special node forms:
 
@@ -411,12 +413,30 @@ observed during discovery, validation, planning, and transaction staging. The
 final commit is deliberately non-cancelable: once it starts, all managed
 writes finish or roll back before the command returns.
 
+## Exporting Scene Edits
+
+`export-scene` is the explicit reconciliation path for a generated TSCN that
+was edited in Godot. It updates `layout.json`, incrementally registers new
+package-local resources in `assets.json`, and updates the default locale for
+existing localized properties in `strings.json`. Bindings, codegen, validation,
+and package configuration remain source-owned and are validated after export.
+
+The exporter reads Godot `PackedScene` state and rejects data the manifest
+schema cannot preserve, including signal connections, node groups, built-in
+SubResources, complex Variant values, and scene-instance overrides. All source
+files are restored if package validation fails. Export does not run Generate.
+
+Generated nodes contain `metadata/_manifest_ui_id` so renames and moves retain
+their manifest ids. Generate once before starting a scene-edit workflow when
+working with scenes created by an older generator.
+
 ## CLI Contract
 
 ```text
 manifest-ui doctor --project <dir> [--godot <exe>]
 manifest-ui validate <package> [--project <dir>] [--format text|json|sarif] [--write-report]
 manifest-ui generate <package> [--project <dir>] [--check] [--clean]
+manifest-ui export-scene <package> [--project <dir>] [--godot <exe>]
 manifest-ui verify <package> [--project <dir>]
 manifest-ui check --project <dir> [--release]
 manifest-ui migrate --check <package>

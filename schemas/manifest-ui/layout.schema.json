@@ -12,6 +12,28 @@
       "additionalProperties": false,
       "properties": { "assetRef": { "type": "string", "minLength": 1 } }
     },
+    "color": {
+      "type": "object",
+      "required": ["color"],
+      "additionalProperties": false,
+      "properties": {
+        "color": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 }
+      }
+    },
+    "nodePath": {
+      "type": "object",
+      "required": ["nodePath"],
+      "additionalProperties": false,
+      "properties": { "nodePath": { "type": "string" } }
+    },
+    "vector2i": {
+      "type": "object",
+      "required": ["vector2i"],
+      "additionalProperties": false,
+      "properties": {
+        "vector2i": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+      }
+    },
     "node": {
       "type": "object",
       "required": ["id", "type", "name"],
@@ -30,7 +52,10 @@
               { "type": "number" },
               { "type": "boolean" },
               { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
-              { "$ref": "#/$defs/assetRef" }
+              { "$ref": "#/$defs/assetRef" },
+              { "$ref": "#/$defs/color" },
+              { "$ref": "#/$defs/nodePath" },
+              { "$ref": "#/$defs/vector2i" }
             ]
           }
         },

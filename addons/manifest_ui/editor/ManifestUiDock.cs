@@ -1,5 +1,6 @@
 #if TOOLS
 using Godot;
+using GodotUi.Manifest.EngineTooling;
 using GodotUi.Manifest.Tooling;
 using System;
 using System.Collections.Generic;
@@ -128,6 +129,7 @@ internal partial class ManifestUiDock : VBoxContainer, IManifestUiAssemblyUnload
         packageActions.AddChild(CreateOperationButton("Doctor", nameof(RunDoctor)));
         packageActions.AddChild(CreateOperationButton("Validate", nameof(RunValidate)));
         packageActions.AddChild(CreateOperationButton("Generate", nameof(RunGenerate)));
+        packageActions.AddChild(CreateOperationButton("Export JSON", nameof(RunExportJson)));
         packageActions.AddChild(CreateOperationButton("Verify", nameof(RunVerify)));
         packageActions.AddChild(CreateOperationButton("Preview", nameof(RunPreview)));
         packageActions.AddChild(CreateOperationButton("Run Preview", nameof(RunInteractivePreview)));
@@ -325,6 +327,55 @@ internal partial class ManifestUiDock : VBoxContainer, IManifestUiAssemblyUnload
         }
 
         RunTool("Generate", "generate", package, "--project", ProjectRoot());
+    }
+
+    private void RunExportJson()
+    {
+        EnsureDockState();
+        var package = SelectedPackagePath();
+        if (package is null || _toolRunning || _generatedRefreshPending)
+        {
+            SetStatus("Select a package and wait for the current operation to finish.", true);
+            return;
+        }
+        if (!TryReadPreview(package, out var scenePath, out _, out var error))
+        {
+            SetStatus($"Could not resolve package scene: {error}", true);
+            return;
+        }
+        if (EditorInterface.Singleton.GetUnsavedScenes().Contains(scenePath, StringComparer.Ordinal))
+        {
+            SetStatus($"Save {scenePath} before exporting JSON.", true);
+            return;
+        }
+
+        _currentOperation = "Export JSON";
+        _toolRunning = true;
+        SetBusy(true);
+        SetStatus("Export JSON running...", false);
+        Log("Export JSON", $"Exporting {scenePath} into manifest source JSON.");
+        ManifestUiToolResult result;
+        try
+        {
+            result = ManifestUiSceneExporter.Export(package);
+        }
+        catch (Exception exception)
+        {
+            result = new ManifestUiToolResult
+            {
+                ExitCode = ManifestUiTool.InternalFailure,
+                Diagnostics = new[]
+                {
+                    new ManifestDiagnostic("MUI4100", ManifestDiagnosticSeverity.Error, scenePath, "/export", 0, 0, exception.Message),
+                },
+            };
+        }
+        FinishOperation(result, canceled: false);
+        if (result.Success)
+        {
+            EditorInterface.Singleton.GetResourceFilesystem().CallDeferred(EditorFileSystem.MethodName.Scan);
+            SetStatus("Export JSON succeeded. Manifest sources are current; Generate was not run.", false);
+        }
     }
 
     private void RunVerify()

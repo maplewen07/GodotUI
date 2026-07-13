@@ -4,14 +4,27 @@
 
 [resource]
 script = ExtResource("1_style")
+; Shape: 3 = Superellipse，连续圆角的方圆轮廓。
 Shape = 3
+; CornerRadius: 仅 RoundedRectangle 使用；当前 Superellipse 忽略此值并沿用脚本默认值。
+; EdgeSoftness: 轮廓边缘的羽化宽度；当前沿用脚本默认值。
+; SuperellipseExponent: 越大越接近圆角矩形；2 接近椭圆。
 SuperellipseExponent = 4.6
+; BlurLod: 背景模糊等级，越大越像磨砂玻璃。
 BlurLod = 4.6
+; Refraction: 沿边缘法线偏移背景采样，模拟玻璃折射。
 Refraction = 1.8
+; Dispersion: 红蓝通道偏移量，形成轻微色散彩边。
 Dispersion = 0.3
+; Tint: 玻璃的染色颜色。
 Tint = Color(0.843137, 0.964706, 1, 1)
+; TintStrength: 染色混合比例，0 保留背景，1 完全使用 Tint。
 TintStrength = 0.28
+; Saturation: 透过玻璃后的背景饱和度，1 表示不变。
 Saturation = 0.88
+; RimStrength: 内侧边缘高光强度。
 RimStrength = 0.52
+; InnerShadow: 从边缘向内扩散的阴影强度。
 InnerShadow = 0.22
+; NoiseStrength: 细微噪点强度，用于降低色带和过度平滑感。
 NoiseStrength = 0.018

@@ -53,8 +53,9 @@ pwsh ./scripts/ci/Invoke-CI.ps1 -GodotBin $env:GODOT_BIN
 ```
 
 The CLI and editor plugin consume the same tooling core. Generated `.g.cs`,
-`.tscn`, and `.tres` files are managed output; handwritten partial widget files
-remain user-owned.
+`.tscn`, and `.tres` files are managed output; saved TSCN visual edits can be
+reconciled with `export-scene` before regeneration, while handwritten partial
+widget files remain user-owned.
 
 The root project opens `ui/liquid_glass/package.json` as an integration demo.
 It exercises generic scripted controls and resource-backed layout properties

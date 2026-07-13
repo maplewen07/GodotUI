@@ -5,10 +5,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Godot;
 using GodotUi.Manifest;
+using GodotUi.Manifest.EngineTooling;
+using GodotUi.Manifest.Tooling;
 
 namespace GodotUi.Tests;
 
@@ -27,6 +30,7 @@ public partial class SelfCheck : Node
 #if TOOLS
             await RunCaseAsync("EngineVerify", () => RunSync(RuntimeContractChecks.CheckEngineVerify));
 #endif
+            await RunCaseAsync("SceneExport", () => RunSync(CheckSceneExport));
             await RunCaseAsync("StoreAndServices", () => RunSync(RuntimeContractChecks.CheckStoreAndServices));
             await RunCaseAsync("ScriptedBindingFallback", () => RunSync(RuntimeContractChecks.CheckScriptedBindingFallback));
             await RunCaseAsync("KeyedRepeaterPool", () => RunSync(RuntimeContractChecks.CheckKeyedRepeaterPool));
@@ -193,6 +197,142 @@ public partial class SelfCheck : Node
         {
             ManifestBindingConverters.Unregister("selfcheckUpper");
         }
+    }
+
+    private static void CheckSceneExport()
+    {
+        var projectRoot = Path.GetFullPath(ProjectSettings.GlobalizePath("res://"));
+        var fixtureDirectory = Path.GetFullPath(Path.Combine(projectRoot, ".godot", "manifest_ui_export_selfcheck"));
+        var allowedRoot = Path.GetFullPath(Path.Combine(projectRoot, ".godot")) + Path.DirectorySeparatorChar;
+        Require(fixtureDirectory.StartsWith(allowedRoot, StringComparison.OrdinalIgnoreCase), "export fixture must stay under .godot");
+        if (Directory.Exists(fixtureDirectory)) Directory.Delete(fixtureDirectory, recursive: true);
+        Directory.CreateDirectory(Path.Combine(fixtureDirectory, "assets"));
+
+        var sceneResourcePath = "res://.godot/manifest_ui_export_selfcheck/FixtureWidget.tscn";
+        var textureResourcePath = "res://.godot/manifest_ui_export_selfcheck/assets/icon.tres";
+        var image = Image.CreateEmpty(2, 2, false, Image.Format.Rgba8);
+        image.Fill(new Color(0.2f, 0.7f, 1.0f, 1.0f));
+        var texture = ImageTexture.CreateFromImage(image);
+        Require(ResourceSaver.Save(texture, textureResourcePath) == Error.Ok, "fixture texture save failed");
+        var savedTexture = ResourceLoader.Load<Texture2D>(textureResourcePath, cacheMode: ResourceLoader.CacheMode.Replace)
+            ?? throw new InvalidOperationException("fixture texture load failed");
+
+        var root = new Control { Name = "FixtureWidget" };
+        root.SetMeta("_manifest_ui_id", "root");
+        var panel = new ManifestUiExportFixtureControl
+        {
+            Name = "RenamedPanel",
+            AccentColor = new Color(0.1f, 0.2f, 0.3f, 0.8f),
+            TargetPath = new NodePath("Title"),
+            GridSize = new Vector2I(32, 48),
+            Icon = savedTexture,
+        };
+        panel.SetMeta("_manifest_ui_id", "panel");
+        root.AddChild(panel);
+        panel.Owner = root;
+        var title = new Label { Name = "Title", Text = "Updated title" };
+        title.SetMeta("_manifest_ui_id", "title");
+        panel.AddChild(title);
+        title.Owner = root;
+        var added = new Label { Name = "NewLabel", Text = "New" };
+        root.AddChild(added);
+        added.Owner = root;
+
+        var packedScene = new PackedScene();
+        Require(packedScene.Pack(root) == Error.Ok, "fixture scene pack failed");
+        Require(ResourceSaver.Save(packedScene, sceneResourcePath) == Error.Ok, "fixture scene save failed");
+        root.Free();
+
+        WriteFixtureFiles(fixtureDirectory);
+        var packagePath = Path.Combine(fixtureDirectory, "package.json");
+        var result = ManifestUiSceneExporter.Export(packagePath);
+        Require(result.Success, string.Join("\n", result.Diagnostics.Select(item => $"{item.JsonPointer}: {item.Message}")));
+
+        var layout = JsonNode.Parse(File.ReadAllText(Path.Combine(fixtureDirectory, "layout.json")))!.AsObject();
+        var exportedRoot = layout["root"]!.AsObject();
+        var rootChildren = exportedRoot["children"]!.AsArray();
+        var exportedPanel = rootChildren[0]!.AsObject();
+        Require(exportedPanel["id"]!.GetValue<string>() == "panel", "renamed node should keep metadata id");
+        Require(exportedPanel["name"]!.GetValue<string>() == "RenamedPanel", "renamed node name was not exported");
+        var properties = exportedPanel["properties"]!.AsObject();
+        Require(properties["AccentColor"]!["color"]!.AsArray().Count == 4, "Color property was not exported");
+        Require(properties["TargetPath"]!["nodePath"]!.GetValue<string>() == "Title", "NodePath property was not exported");
+        Require(properties["GridSize"]!["vector2i"]![1]!.GetValue<int>() == 48, "Vector2i property was not exported");
+        Require(!string.IsNullOrWhiteSpace(properties["Icon"]!["assetRef"]!.GetValue<string>()), "resource property was not exported");
+        Require(rootChildren[1]!["id"]!.GetValue<string>() == "NewLabel", "new node id was not derived from its name");
+
+        var assets = JsonNode.Parse(File.ReadAllText(Path.Combine(fixtureDirectory, "assets.json")))!.AsObject()["assets"]!.AsArray();
+        Require(assets.Count == 1 && assets[0]!["relativePath"]!.GetValue<string>() == "assets/icon.tres", "new asset was not registered");
+        var strings = JsonNode.Parse(File.ReadAllText(Path.Combine(fixtureDirectory, "strings.json")))!.AsObject();
+        Require(strings["strings"]!["fixture.title"]!["en"]!.GetValue<string>() == "Updated title", "default locale was not updated");
+
+        var generated = ManifestUiTool.Execute(new[] { "generate", packagePath }, projectRoot);
+        Require(generated.Success, "fixture generation failed after scene export");
+        var check = ManifestUiTool.Execute(new[] { "generate", packagePath, "--check" }, projectRoot);
+        Require(check.Success, "generated output drifted after scene export");
+        Require(File.ReadAllText(Path.Combine(fixtureDirectory, "FixtureWidget.tscn")).Contains("metadata/_manifest_ui_id", StringComparison.Ordinal), "generated scene omitted stable node ids");
+
+        Directory.Delete(fixtureDirectory, recursive: true);
+    }
+
+    private static void WriteFixtureFiles(string directory)
+    {
+        File.WriteAllText(Path.Combine(directory, "package.json"), """
+            {
+              "schemaVersion": 1,
+              "packageId": "ui.export_fixture",
+              "displayName": "Export Fixture",
+              "designResolution": [640, 480],
+              "assets": "assets.json",
+              "layout": "layout.json",
+              "bindings": "bindings.json",
+              "codegen": "codegen.json",
+              "validation": "validation.json",
+              "strings": "strings.json",
+              "runtime": { "controllerScope": "package" },
+              "godot": {
+                "systemName": "export_fixture",
+                "widgetClass": "FixtureWidget",
+                "controllerClass": "GodotUi.Tests.FixtureController",
+                "namespace": "GodotUi.Tests.Generated",
+                "outputDir": ".godot/manifest_ui_export_selfcheck",
+                "scenePath": "res://.godot/manifest_ui_export_selfcheck/FixtureWidget.tscn"
+              }
+            }
+            """);
+        File.WriteAllText(Path.Combine(directory, "assets.json"), "{ \"assets\": [] }\n");
+        File.WriteAllText(Path.Combine(directory, "layout.json"), """
+            {
+              "root": {
+                "id": "root", "type": "Control", "name": "FixtureWidget", "properties": {},
+                "children": [
+                  {
+                    "id": "panel", "type": "Control", "name": "OldPanel",
+                    "scriptPath": "res://tests/ManifestUiExportFixtureControl.cs", "properties": {},
+                    "children": [
+                      {
+                        "id": "title", "type": "Label", "name": "Title", "properties": {},
+                        "localization": { "text": { "key": "fixture.title", "context": "fixture", "arguments": [] } },
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+            """);
+        File.WriteAllText(Path.Combine(directory, "bindings.json"), """
+            { "mvvm": { "updatePolicy": "manual", "fields": [] }, "bindings": {}, "repeaters": [], "inputs": [], "controls": [], "events": { "channels": [] } }
+            """);
+        File.WriteAllText(Path.Combine(directory, "codegen.json"), """
+            { "schemaVersion": 1, "generator": "ManifestUi", "requiredServices": [], "routes": [] }
+            """);
+        File.WriteAllText(Path.Combine(directory, "validation.json"), """
+            { "commandletInputWhitelist": ["assets.json", "layout.json", "bindings.json", "codegen.json", "validation.json", "strings.json"], "checks": {} }
+            """);
+        File.WriteAllText(Path.Combine(directory, "strings.json"), """
+            { "schemaVersion": 1, "defaultLocale": "en", "locales": ["en", "zh"], "strings": { "fixture.title": { "en": "Old title", "zh": "旧标题" } } }
+            """);
     }
 
     private async Task CheckLifecycle()

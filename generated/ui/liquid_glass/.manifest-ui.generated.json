@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "toolVersion": "0.1.0-alpha.1",
+  "toolVersion": "0.1.0-alpha.2",
   "packageId": "ui.liquid_glass",
   "inputHash": "sha256:f129d6ec11a663da8818e5555b2f788a83891052f376025d46cccdde5c94d4d0",
   "inputs": [
@@ -43,7 +43,7 @@
     {
       "path": "LiquidGlassWidget.tscn",
       "kind": "scene",
-      "contentHash": "sha256:0e6c6fa10e87630c21fe111d317720c14d3e9dbab3fd0a35bb3c97923be686b3"
+      "contentHash": "sha256:d5247d211bd67e2a0c462067aaa2b31550b24a6f7782ee189123497690015d7d"
     }
   ]
 }

@@ -7,6 +7,19 @@ namespace ManifestUi.Tooling.Tests;
 public sealed class CliOutputTests
 {
     [Fact]
+    public void Help_ListsSceneExportCommand()
+    {
+        var output = new StringWriter();
+        var error = new StringWriter();
+
+        var exitCode = ManifestUiTool.Run(new[] { "--help" }, output, error, RepositoryPaths.Root);
+
+        Assert.Equal(ManifestUiTool.Success, exitCode);
+        Assert.Contains("manifest-ui export-scene <package>", output.ToString(), StringComparison.Ordinal);
+        Assert.Empty(error.ToString());
+    }
+
+    [Fact]
     public void Run_JsonFormatEmitsStructuredDiagnosticsToStdout()
     {
         var output = new StringWriter();

@@ -6,6 +6,34 @@ namespace ManifestUi.Tooling.Tests;
 public sealed class ResourceAssetAndScriptedControlTests
 {
     [Fact]
+    public void Generate_EmitsTypedUiVariantsAndStableNodeIds()
+    {
+        using var project = new ManifestTestProject();
+        project.WriteLayout("""
+            {
+              "root": {
+                "id": "root", "type": "Control", "name": "Root",
+                "properties": {
+                  "self_modulate": { "color": [1.0, 0.5, 0.25, 1.0] },
+                  "focus_neighbor_right": { "nodePath": "Button" },
+                  "size_int": { "vector2i": [32, 48] }
+                },
+                "children": []
+              }
+            }
+            """);
+
+        var result = ManifestUiTool.Execute(new[] { "generate", project.PackagePath }, project.Root);
+
+        Assert.True(result.Success, Format(result));
+        var scene = File.ReadAllText(Path.Combine(project.OutputDirectory, "TestWidget.tscn"));
+        Assert.Contains("metadata/_manifest_ui_id = \"root\"", scene, StringComparison.Ordinal);
+        Assert.Contains("self_modulate = Color(1.0, 0.5, 0.25, 1.0)", scene, StringComparison.Ordinal);
+        Assert.Contains("focus_neighbor_right = NodePath(\"Button\")", scene, StringComparison.Ordinal);
+        Assert.Contains("size_int = Vector2i(32, 48)", scene, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Generate_EmitsDeterministicExtResourcesForEveryAssetReferenceKind()
     {
         using var project = new ManifestTestProject();
@@ -90,8 +118,8 @@ public sealed class ResourceAssetAndScriptedControlTests
 
         Assert.Equal(ManifestUiTool.ValidationFailure, result.ExitCode);
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.JsonPointer == "/root/properties/missing" && diagnostic.Message.Contains("unknown asset reference", StringComparison.Ordinal));
-        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.JsonPointer == "/root/properties/wrong_type" && diagnostic.Message.Contains("object property values", StringComparison.Ordinal));
-        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.JsonPointer == "/root/properties/extra_field" && diagnostic.Message.Contains("object property values", StringComparison.Ordinal));
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.JsonPointer == "/root/properties/wrong_type" && diagnostic.Message.Contains("must be a string", StringComparison.Ordinal));
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.JsonPointer == "/root/properties/extra_field" && diagnostic.Message.Contains("must be a string", StringComparison.Ordinal));
     }
 
     [Fact]
