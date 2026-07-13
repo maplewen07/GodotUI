@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "generatorId": "ManifestUi",
+  "packageId": "ui.phone",
+  "displayName": "Phone",
+  "sourceFiles": {
+    "package": {
+      "path": "package.json",
+      "contentHash": "sha256:2c0bdd7cdb9ce64363b8d9a927c66f7dc03dab7d6a2a60bad56d8b3f5a93acdc"
+    },
+    "assets": {
+      "path": "assets.json",
+      "contentHash": "sha256:d7a61733f5b3420d720cf3fc628b83b3d2d01fb337ae8ca80afd79437985ddf2"
+    },
+    "layout": {
+      "path": "layout.json",
+      "contentHash": "sha256:b6b4bf9e5b8a021ce117838e06852942b984e283946fb89be738ce5c6b1dd57d"
+    },
+    "bindings": {
+      "path": "bindings.json",
+      "contentHash": "sha256:74ab173a623ff23716bead2c9de277872876a4569f380b2add7324d86f5b368e"
+    },
+    "codegen": {
+      "path": "codegen.json",
+      "contentHash": "sha256:ce3f9a00dea997f509c91712ec68637487478872578db8befdd022b8603f8154"
+    },
+    "validation": {
+      "path": "validation.json",
+      "contentHash": "sha256:869d0ef2d963307ff3b9689e3997e78d6afea5b00564a297746bae44de1ca0f0"
+    }
+  },
+  "counts": {
+    "nodes": 20,
+    "fields": 9,
+    "events": 2,
+    "channels": 2,
+    "assets": 3
+  },
+  "assets": [
+    {
+      "id": "phone_icon",
+      "kind": "texture",
+      "sourcePath": "assets/phone_icon.tres",
+      "resourcePath": "res://ui/phone/assets/phone_icon.tres",
+      "contentHash": "sha256:dd437e775928e01a006437ae967295a2043dab255cf292dab2edc7087a7e4ded",
+      "themeOutput": ""
+    },
+    {
+      "id": "phone_font",
+      "kind": "font",
+      "sourcePath": "assets/phone_font.tres",
+      "resourcePath": "res://ui/phone/assets/phone_font.tres",
+      "contentHash": "sha256:a2f91f08660e22eb2f49fde0fa51b3818ebd823740030b194583ab87bfb991dc",
+      "themeOutput": ""
+    },
+    {
+      "id": "phone_theme",
+      "kind": "theme",
+      "sourcePath": "assets/phone_theme.json",
+      "resourcePath": "res://generated/ui/phone/assets/PhoneTheme.tres",
+      "contentHash": "sha256:3924a49e425b4c8fa32640ad74b1ae1924925effe6f6358574de5c3a929e33d1",
+      "themeOutput": "res://generated/ui/phone/assets/PhoneTheme.tres"
+    }
+  ]
+}

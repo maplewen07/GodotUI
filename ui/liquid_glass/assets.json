@@ -1,19 +1,19 @@
 {
   "assets": [
-    {
-      "id": "liquid_glass_background",
-      "relativePath": "assets/liquid_glass_background.svg",
-      "kind": "texture"
-    },
-    {
-      "id": "frosted_superellipse_style",
-      "relativePath": "assets/frosted_superellipse_style_resource.tres",
-      "kind": "resource"
-    },
-    {
-      "id": "vibrant_rounded_style",
-      "relativePath": "assets/vibrant_rounded_style_resource.tres",
-      "kind": "resource"
-    }
+	{
+	  "id": "liquid_glass_background",
+	  "relativePath": "assets/liquid_glass_background.svg",
+	  "kind": "texture"
+	},
+	{
+	  "id": "frosted_superellipse_style",
+	  "relativePath": "assets/frosted_superellipse_style_resource.tres",
+	  "kind": "resource"
+	},
+	{
+	  "id": "vibrant_rounded_style",
+	  "relativePath": "assets/vibrant_rounded_style_resource.tres",
+	  "kind": "resource"
+	}
   ]
 }

@@ -1,240 +1,240 @@
 {
   "root": {
-    "id": "LiquidGlassWidget",
-    "type": "Control",
-    "name": "LiquidGlassWidget",
-    "properties": {
-      "anchors_preset": 15,
-      "anchor_right": 1.0,
-      "anchor_bottom": 1.0,
-      "grow_horizontal": 2,
-      "grow_vertical": 2
-    },
-    "children": [
-      {
-        "id": "Background",
-        "type": "TextureRect",
-        "name": "Background",
-        "properties": {
-          "anchors_preset": 15,
-          "anchor_right": 1.0,
-          "anchor_bottom": 1.0,
-          "grow_horizontal": 2,
-          "grow_vertical": 2,
-          "expand_mode": 1,
-          "stretch_mode": 6,
-          "mouse_filter": 2,
-          "texture": { "assetRef": "liquid_glass_background" }
-        },
-        "children": []
-      },
-      {
-        "id": "TitleLabel",
-        "type": "Label",
-        "name": "TitleLabel",
-        "properties": {
-          "anchors_preset": 8,
-          "anchor_left": 0.5,
-          "anchor_top": 0.5,
-          "anchor_right": 0.5,
-          "anchor_bottom": 0.5,
-          "offset_left": -300.0,
-          "offset_top": -170.0,
-          "offset_right": 300.0,
-          "offset_bottom": -140.0,
-          "text": "LIQUID GLASS / MANIFEST UI",
-          "theme_override_font_sizes/font_size": 20,
-          "mouse_filter": 2
-        },
-        "children": []
-      },
-      {
-        "id": "PrimaryGlass",
-        "type": "Control",
-        "name": "PrimaryGlass",
-        "scriptPath": "res://addons/liquid_glass/runtime/LiquidGlassPanel.cs",
-        "properties": {
-          "anchors_preset": 8,
-          "anchor_left": 0.5,
-          "anchor_top": 0.5,
-          "anchor_right": 0.5,
-          "anchor_bottom": 0.5,
-          "offset_left": -300.0,
-          "offset_top": -132.0,
-          "offset_right": 30.0,
-          "offset_bottom": 45.0,
-          "Preset": 4,
-          "Style": { "assetRef": "frosted_superellipse_style" },
-          "accessibility_name": "Frosted superellipse panel"
-        },
-        "children": [
-          {
-            "id": "PrimaryTitle",
-            "type": "Label",
-            "name": "PrimaryTitle",
-            "properties": {
-              "offset_left": 28.0,
-              "offset_top": 24.0,
-              "offset_right": 302.0,
-              "offset_bottom": 56.0,
-              "text": "FROSTED / SUPERELLIPSE",
-              "theme_override_font_sizes/font_size": 18,
-              "mouse_filter": 2
-            },
-            "children": []
-          },
-          {
-            "id": "PrimaryDescription",
-            "type": "Label",
-            "name": "PrimaryDescription",
-            "properties": {
-              "offset_left": 28.0,
-              "offset_top": 46.0,
-              "offset_right": 302.0,
-              "offset_bottom": 70.0,
-              "text": "Style loaded from a Manifest Resource",
-              "theme_override_font_sizes/font_size": 14,
-              "mouse_filter": 2
-            },
-            "children": []
-          }
-        ]
-      },
-      {
-        "id": "OverlapGlass",
-        "type": "Control",
-        "name": "OverlapGlass",
-        "scriptPath": "res://addons/liquid_glass/runtime/LiquidGlassPanel.cs",
-        "properties": {
-          "anchors_preset": 8,
-          "anchor_left": 0.5,
-          "anchor_top": 0.5,
-          "anchor_right": 0.5,
-          "anchor_bottom": 0.5,
-          "offset_left": -50.0,
-          "offset_top": -60.0,
-          "offset_right": 250.0,
-          "offset_bottom": 100.0,
-          "Preset": 4,
-          "Style": { "assetRef": "vibrant_rounded_style" },
-          "accessibility_name": "Vibrant overlap panel"
-        },
-        "children": [
-          {
-            "id": "OverlapTitle",
-            "type": "Label",
-            "name": "OverlapTitle",
-            "properties": {
-              "offset_left": 28.0,
-              "offset_top": 28.0,
-              "offset_right": 272.0,
-              "offset_bottom": 60.0,
-              "text": "VIBRANT OVERLAP",
-              "theme_override_font_sizes/font_size": 18,
-              "mouse_filter": 2
-            },
-            "children": []
-          },
-          {
-            "id": "OverlapDescription",
-            "type": "Label",
-            "name": "OverlapDescription",
-            "properties": {
-              "offset_left": 28.0,
-              "offset_top": 66.0,
-              "offset_right": 272.0,
-              "offset_bottom": 98.0,
-              "text": "Manifest drives order and behavior",
-              "theme_override_font_sizes/font_size": 14,
-              "mouse_filter": 2
-            },
-            "children": []
-          }
-        ]
-      },
-      {
-        "id": "ActionButton",
-        "type": "Control",
-        "name": "ActionButton",
-        "scriptPath": "res://addons/liquid_glass/runtime/LiquidGlassButton.cs",
-        "properties": {
-          "anchors_preset": 8,
-          "anchor_left": 0.5,
-          "anchor_top": 0.5,
-          "anchor_right": 0.5,
-          "anchor_bottom": 0.5,
-          "offset_left": -280.0,
-          "offset_top": 105.0,
-          "offset_right": -115.0,
-          "offset_bottom": 150.0,
-          "Text": "Apply glass",
-          "accessibility_name": "Apply glass effect",
-          "accessibility_description": "Activates the manifest generated Liquid Glass action."
-        },
-        "children": []
-      },
-      {
-        "id": "IntensitySlider",
-        "type": "Control",
-        "name": "IntensitySlider",
-        "scriptPath": "res://addons/liquid_glass/runtime/LiquidGlassSlider.cs",
-        "properties": {
-          "anchors_preset": 8,
-          "anchor_left": 0.5,
-          "anchor_top": 0.5,
-          "anchor_right": 0.5,
-          "anchor_bottom": 0.5,
-          "offset_left": -80.0,
-          "offset_top": 108.0,
-          "offset_right": 170.0,
-          "offset_bottom": 148.0,
-          "MinValue": 0.0,
-          "MaxValue": 1.0,
-          "Step": 0.05,
-          "Value": 0.45,
-          "accessibility_name": "Glass intensity",
-          "accessibility_description": "Adjusts the manifest input value from zero to one."
-        },
-        "children": []
-      },
-      {
-        "id": "IntensityLabel",
-        "type": "Label",
-        "name": "IntensityLabel",
-        "properties": {
-          "anchors_preset": 8,
-          "anchor_left": 0.5,
-          "anchor_top": 0.5,
-          "anchor_right": 0.5,
-          "anchor_bottom": 0.5,
-          "offset_left": 185.0,
-          "offset_top": 112.0,
-          "offset_right": 280.0,
-          "offset_bottom": 144.0,
-          "text": "",
-          "mouse_filter": 2
-        },
-        "children": []
-      },
-      {
-        "id": "StatusLabel",
-        "type": "Label",
-        "name": "StatusLabel",
-        "properties": {
-          "anchors_preset": 8,
-          "anchor_left": 0.5,
-          "anchor_top": 0.5,
-          "anchor_right": 0.5,
-          "anchor_bottom": 0.5,
-          "offset_left": -280.0,
-          "offset_top": 154.0,
-          "offset_right": 280.0,
-          "offset_bottom": 177.0,
-          "text": "",
-          "mouse_filter": 2
-        },
-        "children": []
-      }
-    ]
+	"id": "LiquidGlassWidget",
+	"type": "Control",
+	"name": "LiquidGlassWidget",
+	"properties": {
+	  "anchors_preset": 15,
+	  "anchor_right": 1.0,
+	  "anchor_bottom": 1.0,
+	  "grow_horizontal": 2,
+	  "grow_vertical": 2
+	},
+	"children": [
+	  {
+		"id": "Background",
+		"type": "TextureRect",
+		"name": "Background",
+		"properties": {
+		  "anchors_preset": 15,
+		  "anchor_right": 1.0,
+		  "anchor_bottom": 1.0,
+		  "grow_horizontal": 2,
+		  "grow_vertical": 2,
+		  "expand_mode": 1,
+		  "stretch_mode": 6,
+		  "mouse_filter": 2,
+		  "texture": { "assetRef": "liquid_glass_background" }
+		},
+		"children": []
+	  },
+	  {
+		"id": "TitleLabel",
+		"type": "Label",
+		"name": "TitleLabel",
+		"properties": {
+		  "anchors_preset": 8,
+		  "anchor_left": 0.5,
+		  "anchor_top": 0.5,
+		  "anchor_right": 0.5,
+		  "anchor_bottom": 0.5,
+		  "offset_left": -300.0,
+		  "offset_top": -170.0,
+		  "offset_right": 300.0,
+		  "offset_bottom": -140.0,
+		  "text": "LIQUID GLASS / MANIFEST UI",
+		  "theme_override_font_sizes/font_size": 20,
+		  "mouse_filter": 2
+		},
+		"children": []
+	  },
+	  {
+		"id": "PrimaryGlass",
+		"type": "Control",
+		"name": "PrimaryGlass",
+		"scriptPath": "res://addons/liquid_glass/runtime/LiquidGlassPanel.cs",
+		"properties": {
+		  "anchors_preset": 8,
+		  "anchor_left": 0.5,
+		  "anchor_top": 0.5,
+		  "anchor_right": 0.5,
+		  "anchor_bottom": 0.5,
+		  "offset_left": -300.0,
+		  "offset_top": -132.0,
+		  "offset_right": 30.0,
+		  "offset_bottom": 45.0,
+		  "Preset": 4,
+		  "Style": { "assetRef": "frosted_superellipse_style" },
+		  "accessibility_name": "Frosted superellipse panel"
+		},
+		"children": [
+		  {
+			"id": "PrimaryTitle",
+			"type": "Label",
+			"name": "PrimaryTitle",
+			"properties": {
+			  "offset_left": 28.0,
+			  "offset_top": 24.0,
+			  "offset_right": 302.0,
+			  "offset_bottom": 56.0,
+			  "text": "FROSTED / SUPERELLIPSE",
+			  "theme_override_font_sizes/font_size": 18,
+			  "mouse_filter": 2
+			},
+			"children": []
+		  },
+		  {
+			"id": "PrimaryDescription",
+			"type": "Label",
+			"name": "PrimaryDescription",
+			"properties": {
+			  "offset_left": 28.0,
+			  "offset_top": 46.0,
+			  "offset_right": 302.0,
+			  "offset_bottom": 70.0,
+			  "text": "Style loaded from a Manifest Resource",
+			  "theme_override_font_sizes/font_size": 14,
+			  "mouse_filter": 2
+			},
+			"children": []
+		  }
+		]
+	  },
+	  {
+		"id": "OverlapGlass",
+		"type": "Control",
+		"name": "OverlapGlass",
+		"scriptPath": "res://addons/liquid_glass/runtime/LiquidGlassPanel.cs",
+		"properties": {
+		  "anchors_preset": 8,
+		  "anchor_left": 0.5,
+		  "anchor_top": 0.5,
+		  "anchor_right": 0.5,
+		  "anchor_bottom": 0.5,
+		  "offset_left": -50.0,
+		  "offset_top": -60.0,
+		  "offset_right": 250.0,
+		  "offset_bottom": 100.0,
+		  "Preset": 4,
+		  "Style": { "assetRef": "vibrant_rounded_style" },
+		  "accessibility_name": "Vibrant overlap panel"
+		},
+		"children": [
+		  {
+			"id": "OverlapTitle",
+			"type": "Label",
+			"name": "OverlapTitle",
+			"properties": {
+			  "offset_left": 28.0,
+			  "offset_top": 28.0,
+			  "offset_right": 272.0,
+			  "offset_bottom": 60.0,
+			  "text": "VIBRANT OVERLAP",
+			  "theme_override_font_sizes/font_size": 18,
+			  "mouse_filter": 2
+			},
+			"children": []
+		  },
+		  {
+			"id": "OverlapDescription",
+			"type": "Label",
+			"name": "OverlapDescription",
+			"properties": {
+			  "offset_left": 28.0,
+			  "offset_top": 66.0,
+			  "offset_right": 272.0,
+			  "offset_bottom": 98.0,
+			  "text": "Manifest drives order and behavior",
+			  "theme_override_font_sizes/font_size": 14,
+			  "mouse_filter": 2
+			},
+			"children": []
+		  }
+		]
+	  },
+	  {
+		"id": "ActionButton",
+		"type": "Control",
+		"name": "ActionButton",
+		"scriptPath": "res://addons/liquid_glass/runtime/LiquidGlassButton.cs",
+		"properties": {
+		  "anchors_preset": 8,
+		  "anchor_left": 0.5,
+		  "anchor_top": 0.5,
+		  "anchor_right": 0.5,
+		  "anchor_bottom": 0.5,
+		  "offset_left": -280.0,
+		  "offset_top": 105.0,
+		  "offset_right": -115.0,
+		  "offset_bottom": 150.0,
+		  "Text": "Apply glass",
+		  "accessibility_name": "Apply glass effect",
+		  "accessibility_description": "Activates the manifest generated Liquid Glass action."
+		},
+		"children": []
+	  },
+	  {
+		"id": "IntensitySlider",
+		"type": "Control",
+		"name": "IntensitySlider",
+		"scriptPath": "res://addons/liquid_glass/runtime/LiquidGlassSlider.cs",
+		"properties": {
+		  "anchors_preset": 8,
+		  "anchor_left": 0.5,
+		  "anchor_top": 0.5,
+		  "anchor_right": 0.5,
+		  "anchor_bottom": 0.5,
+		  "offset_left": -80.0,
+		  "offset_top": 108.0,
+		  "offset_right": 170.0,
+		  "offset_bottom": 148.0,
+		  "MinValue": 0.0,
+		  "MaxValue": 1.0,
+		  "Step": 0.05,
+		  "Value": 0.45,
+		  "accessibility_name": "Glass intensity",
+		  "accessibility_description": "Adjusts the manifest input value from zero to one."
+		},
+		"children": []
+	  },
+	  {
+		"id": "IntensityLabel",
+		"type": "Label",
+		"name": "IntensityLabel",
+		"properties": {
+		  "anchors_preset": 8,
+		  "anchor_left": 0.5,
+		  "anchor_top": 0.5,
+		  "anchor_right": 0.5,
+		  "anchor_bottom": 0.5,
+		  "offset_left": 185.0,
+		  "offset_top": 112.0,
+		  "offset_right": 280.0,
+		  "offset_bottom": 144.0,
+		  "text": "",
+		  "mouse_filter": 2
+		},
+		"children": []
+	  },
+	  {
+		"id": "StatusLabel",
+		"type": "Label",
+		"name": "StatusLabel",
+		"properties": {
+		  "anchors_preset": 8,
+		  "anchor_left": 0.5,
+		  "anchor_top": 0.5,
+		  "anchor_right": 0.5,
+		  "anchor_bottom": 0.5,
+		  "offset_left": -280.0,
+		  "offset_top": 154.0,
+		  "offset_right": 280.0,
+		  "offset_bottom": 177.0,
+		  "text": "",
+		  "mouse_filter": 2
+		},
+		"children": []
+	  }
+	]
   }
 }

@@ -9,14 +9,14 @@
   "codegen": "codegen.json",
   "validation": "validation.json",
   "runtime": {
-    "controllerScope": "instance"
+	"controllerScope": "instance"
   },
   "godot": {
-    "systemName": "liquid_glass",
-    "widgetClass": "LiquidGlassWidget",
-    "controllerClass": "GodotUi.Sample.LiquidGlass.LiquidGlassController",
-    "namespace": "GodotUi.Generated.LiquidGlass",
-    "outputDir": "generated/ui/liquid_glass",
-    "scenePath": "res://generated/ui/liquid_glass/LiquidGlassWidget.tscn"
+	"systemName": "liquid_glass",
+	"widgetClass": "LiquidGlassWidget",
+	"controllerClass": "GodotUi.Sample.LiquidGlass.LiquidGlassController",
+	"namespace": "GodotUi.Generated.LiquidGlass",
+	"outputDir": "generated/ui/liquid_glass",
+	"scenePath": "res://generated/ui/liquid_glass/LiquidGlassWidget.tscn"
   }
 }

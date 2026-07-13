@@ -1,7 +1,6 @@
 @tool
 extends EditorPlugin
 
-const ICON_PATH := "res://addons/liquid_glass/icon.svg"
 const TYPES := [
 	["LiquidGlassPanel", "Control", "res://addons/liquid_glass/runtime/LiquidGlassPanel.cs"],
 	["LiquidGlassButton", "Control", "res://addons/liquid_glass/runtime/LiquidGlassButton.cs"],
@@ -10,7 +9,7 @@ const TYPES := [
 
 
 func _enter_tree() -> void:
-	var icon := load(ICON_PATH) as Texture2D
+	var icon := EditorInterface.get_editor_theme().get_icon(&"Control", &"EditorIcons")
 	for type_entry: Array in TYPES:
 		var script := load(type_entry[2]) as Script
 		if script == null:

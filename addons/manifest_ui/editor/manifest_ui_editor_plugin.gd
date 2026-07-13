@@ -4,7 +4,7 @@ extends EditorPlugin
 const SOURCE_ROOTS_SETTING := "manifest_ui/source_roots"
 const GENERATED_ROOT_SETTING := "manifest_ui/generated_root"
 const OWNED_AUTOLOAD_PREFIX := "manifest_ui/editor/owned_autoloads/"
-const CSHARP_DOCK := "res://addons/manifest_ui/editor/ManifestUiDock.cs"
+const CSHARP_DOCK_SCENE := "res://addons/manifest_ui/editor/ManifestUiDock.tscn"
 const AUTOLOADS := {
 	"ManifestMessageBus": "res://addons/manifest_ui/autoload/ManifestMessageBus.cs",
 	"ManifestUiRoot": "res://addons/manifest_ui/autoload/ManifestUiRoot.cs",
@@ -62,13 +62,13 @@ func _disable_plugin() -> void:
 
 
 func _load_csharp_dock() -> void:
-	_log("Dock", "Loading C# dock script: %s" % CSHARP_DOCK)
-	var dock_script := load(CSHARP_DOCK)
-	if dock_script == null:
+	_log("Dock", "Loading C# dock scene: %s" % CSHARP_DOCK_SCENE)
+	var dock_scene := load(CSHARP_DOCK_SCENE) as PackedScene
+	if dock_scene == null:
 		push_error("[Manifest UI] C# editor dock is unavailable. Build the project in Debug and reload the plugin.")
 		return
 
-	var candidate: Object = dock_script.new()
+	var candidate := dock_scene.instantiate()
 	if not candidate is Control:
 		push_error("[Manifest UI] C# editor dock does not inherit Control.")
 		if candidate is Node:
