@@ -1,6 +1,6 @@
 ---
 name: godot-manifest-ui
-description: Create, modify, validate, generate, and diagnose Godot Manifest UI packages for the GodotUI Manifest UI addon. Use when Codex works with package.json, layout.json, bindings.json, assets.json, codegen.json, validation.json, strings.json, generated Manifest UI scenes, controller partials, service adapters, bindings, events, repeaters, localization, or Manifest UI CLI diagnostics in a Godot 4.7 Mono project.
+description: Create, modify, validate, generate, and diagnose semantically hierarchical Godot Manifest UI packages for the GodotUI Manifest UI addon. Use when Codex works with package.json, layout.json, bindings.json, assets.json, codegen.json, validation.json, strings.json, generated Manifest UI scenes, controller partials, service adapters, bindings, events, repeaters, localization, or Manifest UI CLI diagnostics in a Godot 4.7 Mono project.
 ---
 
 # Godot Manifest UI
@@ -11,15 +11,17 @@ Treat Source JSON as canonical. Treat generated scenes and generated C# as repla
 
 1. Locate `project.godot`, configured Manifest UI source roots, and the target `package.json`.
 2. Read the package and every referenced manifest before editing. Read [references/schema-v1.md](references/schema-v1.md) when changing manifest shape.
-3. Inspect existing Controllers and services before adding fields or events. Read [references/runtime.md](references/runtime.md) for lifecycle and service boundaries.
-4. Edit Source JSON and handwritten code by default. For visual scene edits, save the generated `.tscn` and immediately run `export-scene` before any regeneration. Never hand-edit `.g.cs`, derived `.tres`, reports, or `.manifest-ui.generated.json`.
-5. Run `scripts/quick_validate.py` for the package. Resolve errors by diagnostic code and JSON pointer.
-6. Run generation only after validation succeeds. Run Verify after generation and ensure a second generate-check reports no drift.
-7. Summarize Source changes, generated outputs, diagnostics, and verification results.
+3. Define the semantic Control tree before authoring `layout.json`, then create bindings only after final node paths exist. Read [references/authoring.md](references/authoring.md).
+4. Inspect existing Controllers and services before adding fields or events. Read [references/runtime.md](references/runtime.md) for lifecycle and service boundaries.
+5. Edit Source JSON and handwritten code by default. For visual scene edits, save the generated `.tscn` and immediately run `export-scene` before any regeneration. Never hand-edit `.g.cs`, derived `.tres`, reports, or `.manifest-ui.generated.json`.
+6. Run `scripts/quick_validate.py` for the package. Resolve errors by diagnostic code and JSON pointer.
+7. Run generation only after validation succeeds. Run Verify after generation and ensure a second generate-check reports no drift.
+8. Summarize Source changes, generated outputs, diagnostics, and verification results.
 
 ## Authoring Rules
 
 - Preserve `schemaVersion: 1` and existing package conventions unless the user explicitly requests migration.
+- Author `layout.json` as a recursive semantic tree rather than a flat list of positioned controls. Give structural parents stable ids and use immediate-parent coordinates.
 - Use stable ids. Do not rename fields, controls, channels, or package ids without checking generated and handwritten consumers.
 - Keep static localized copy in `strings.json` and layout localization entries. Keep runtime-changing values in bindings and the Store.
 - Send UI input through generated View handlers to Controller code. Let Controllers update the Store; do not access business singletons from Views or binders.
@@ -45,8 +47,6 @@ manifest-ui export-scene ui/phone/package.json --godot $env:GODOT_BIN
 manifest-ui generate ui/phone/package.json --check
 manifest-ui verify ui/phone/package.json
 ```
-
-Read [references/authoring.md](references/authoring.md) for package creation and modification checklists. Load only the reference needed for the current task.
 
 ## Failure Handling
 
